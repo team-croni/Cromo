@@ -1,0 +1,152 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+model Memo {
+  id                  String                 @id @default(uuid())
+  title               String
+  content             String?
+  embedding           Unsupported("vector")?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  folderId            String?
+  isArchived          Boolean                @default(false)
+  isDeleted           Boolean                @default(false)
+  isUserDeleted       Boolean                @default(false)
+  deletedAt           DateTime?
+  userId              String?
+  isLiveShareEnabled  Boolean                @default(false)
+  liveShareMode       String?                @default("public")
+  liveSharePermission String?                @default("readWrite")
+  allowedUsers        String[]               @default([])
+  shareToken          String?                @unique
+  shareExpiresAt      DateTime?
+  isTagsUpToDate      Boolean                @default(false)
+  isEmbeddingUpToDate Boolean                @default(false)
+  embeddingUpdatedAt  DateTime?              @default(now())
+  contentHash         String?
+  tagEmbedding        Unsupported("vector")?
+  tagsUpdatedAt       DateTime?              @default(now())
+  folder              Folder?                @relation(fields: [folderId], references: [id])
+  user                User?                  @relation(fields: [userId], references: [id])
+  sharedUsers         UserSharedMemo[]
+  tags                Tag[]                  @relation("MemoToTag")
+
+  @@index([userId, isDeleted])
+  @@index([userId, updatedAt(sort: Desc)])
+  @@index([updatedAt])
+  @@index([embeddingUpdatedAt])
+  @@index([tagsUpdatedAt])
+  @@index([isDeleted])
+  // @@index([embedding], map: "idx_memo_embedding")  // 실제 인덱스는 apply-indexes.ts에서 생성됨
+  // @@index([tagEmbedding], map: "idx_memo_tag_embedding")  // 실제 인덱스는 apply-indexes.ts에서 생성됨
+  @@index([title])
+}
+
+model Folder {
+  id        String   @id @default(uuid())
+  name      String
+  icon      String   @default("Hash")
+  color     String   @default("yellow")
+  parentId  String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
+  userId    String?
+  parent    Folder?  @relation("FolderToFolder", fields: [parentId], references: [id])
+  children  Folder[] @relation("FolderToFolder")
+  user      User?    @relation(fields: [userId], references: [id])
+  memos     Memo[]
+
+  @@index([parentId, order])
+  @@index([isDeleted])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  memos     Memo[]   @relation("MemoToTag")
+
+  @@index([name])
+}
+
+model User {
+  id            String           @id @default(uuid())
+  name          String?
+  email         String           @unique
+  emailVerified DateTime?
+  image         String?
+  avatarColor   String?          @default("from-purple-600 via-pink-600 to-rose-600")
+  avatarType    String?          @default("gradient")
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+  accounts      Account[]
+  folders       Folder[]
+  memos         Memo[]
+  sessions      Session[]
+  sharedMemos   UserSharedMemo[]
+
+  @@index([deletedAt])
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model UserSharedMemo {
+  id        String   @id @default(uuid())
+  userId    String
+  memoId    String
+  createdAt DateTime @default(now())
+  memo      Memo     @relation(fields: [memoId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, memoId])
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  userAgent String?
+  ip        String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

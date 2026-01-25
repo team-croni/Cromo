@@ -1,0 +1,105 @@
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    color: var(--foreground);
+
+    background: var(--background);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    -webkit-tap-highlight-color: transparent;
+    @apply font-pretendard antialiased;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  button {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  input,
+  textarea {
+    outline: none;
+    @apply bg-input rounded border border-input-border;
+
+    &::placeholder {
+      @apply text-muted-foreground/45;
+    }
+    &:focus {
+      @apply outline-2 outline-primary;
+      &::placeholder {
+        @apply text-muted-foreground/70;
+      }
+    }
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+
+    position: relative;
+    border: 1.5px solid var(--color-popover-border);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    background-color: var(--background);
+    cursor: pointer;
+  }
+
+  input[type="radio"] {
+    border-radius: 100%;
+  }
+
+  input[type="checkbox"] {
+    border-radius: 5px;
+  }
+
+  input[type="radio"]:checked,
+  input[type="checkbox"]:checked {
+    border-color: var(--color-primary) !important;
+  }
+
+  .dark input[type="radio"],
+  .dark input[type="checkbox"] {
+    border: 1.5px solid var(--color-popover-border);
+  }
+
+  input[type="radio"]:hover,
+  input[type="checkbox"]:hover {
+    border-color: var(--color-primary);
+  }
+
+  input[type="radio"]:checked::before,
+  input[type="checkbox"]:checked::before {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+
+    background-color: var(--color-primary);
+    animation: checkbox-check 75ms ease-out forwards;
+  }
+
+  input[type="radio"]:checked::before {
+    border-radius: 100%;
+  }
+
+  input[type="checkbox"]:checked::before {
+    border-radius: 2px;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Cromo",
+  "short_name": "Cromo",
+  "description": "AI와 함께하는 스마트한 메모 관리",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#26282b",
+  "icons": [
+    {
+      "src": "/favicon_196.png",
+      "sizes": "196x196",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/favicon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}
