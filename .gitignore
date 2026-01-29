@@ -44,3 +44,12 @@ next-env.d.ts
 .env*.local
 
 GEMINI.md
+/.gemini/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

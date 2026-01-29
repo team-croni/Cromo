@@ -5,12 +5,27 @@ import withPWA from "next-pwa";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   images: {
-    domains: [
-      'lh3.googleusercontent.com',  // Google OAuth 이미지
-      'avatars.githubusercontent.com', // GitHub 이미지
-      'platform-lookaside.fbsbx.com', // Facebook 이미지
-      'scontent.xx.fbcdn.net', // Facebook 이미지
-      'i.pravatar.cc', // 랜덤 이미지 서비스
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'platform-lookaside.fbsbx.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent.xx.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
     ],
   },
   turbopack: {
