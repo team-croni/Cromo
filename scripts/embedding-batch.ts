@@ -30,7 +30,7 @@ async function runMemoEmbedding(force: boolean = false) {
   try {
     const result = force
       ? await embeddingService.forceRegenerateEmbeddings()
-      : await embeddingService.processBatchEmbeddings();
+      : await embeddingService.processBatchEmbeddings(2);
 
     console.log('✅ 메모 임베딩 처리 완료!');
     console.log(`   - 전체 메모: ${result.totalCount}개`);
@@ -50,7 +50,7 @@ async function runMemoEmbedding(force: boolean = false) {
           isDeleted: false,
           isTagsUpToDate: false,
         },
-        take: 50, // 한 번에 처리할 메모 수 제한
+        take: 5, // 한 번에 처리할 메모 수 제한
       });
 
       if (memosToProcess.length > 0) {

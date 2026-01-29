@@ -23,7 +23,7 @@ class EmbeddingService {
   /**
    * 배치 임베딩 처리 작업 실행
    */
-  async processBatchEmbeddings(): Promise<{ successCount: number; totalCount: number; updatedCount: number }> {
+  async processBatchEmbeddings(batchSize: number): Promise<{ successCount: number; totalCount: number; updatedCount: number }> {
     // 이미 처리 중이면 건너뛰기
     if (this.isProcessing) {
       return { successCount: 0, totalCount: 0, updatedCount: 0 };
@@ -49,7 +49,7 @@ class EmbeddingService {
         include: {
           tags: true,
         },
-        take: 50,
+        take: batchSize,
       });
 
       totalCount = memos.length;

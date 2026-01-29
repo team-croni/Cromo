@@ -13,8 +13,6 @@
 
 ·
 
-·
-
 </div>
 
 ## 💡 주요 기술 요약
@@ -123,7 +121,7 @@ graph LR
     subgraph "1. 전처리"
         Scan[변경 감지] --> Hash{Hash 비교}
         Hash -- "일치" --> Flag["Flag 갱신"]
-        Hash -- "변경" --> Batch["50개 배치"]
+        Hash -- "변경" --> Batch["2개 배치"]
     end
 
     subgraph "2. 임베딩 생성"
@@ -147,7 +145,7 @@ graph LR
 #### 최적화 및 동기화
 
 - **Content Hashing**: MD5 해시 알고리즘을 통해 실제 내용 변경 여부를 감지, 불필요한 API 호출 차단 및 리소스 절약
-- **Batch Processing**: 임베딩 미생성 메모를 50개 단위로 스캔하고, Inngest 스케줄링 시 최대 2개씩 처리하여 API 부하와 시스템 부하 최소화
+- **Batch Processing**: Inngest 스케줄링 시 최대 2개씩 처리하여 API 부하와 시스템 부하 최소화
 - **자동 카테고리화**: 임베딩 처리 완료 후 AI가 문맥을 분석하여 적절한 태그를 자동으로 할당하는 후처리 프로세스 연결
 
 #### 임베딩 스케줄링 특징

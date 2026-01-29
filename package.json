@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:socket": "node socket-server/app.js",
+    "dev:dummy": "tsx prisma/seed-demo.ts",
     "postinstall": "prisma generate",
     "build": "next build --turbopack",
     "start": "next start",

@@ -95,13 +95,13 @@ export const processTagsScheduled = inngest.createFunction(
 /**
  * 임베딩 업데이트 대기 중인 메모 처리
  */
-async function processPendingEmbeddingUpdates(batchSize: number = 5) { // 기본 배치 크기를 줄임
+async function processPendingEmbeddingUpdates(batchSize: number = 2) { // 기본 배치 크기를 줄임
   try {
     // embeddingService를 동적으로 불러와서 임베딩 업데이트 실행
     const embeddingService = await import("@/services/embeddingService");
 
     // embeddingService의 processBatchEmbeddings 메서드를 사용하여 배치 처리
-    const result = await embeddingService.default.processBatchEmbeddings();
+    const result = await embeddingService.default.processBatchEmbeddings(batchSize);
 
     return { processed: result.totalCount, success: result.successCount };
   } catch (error) {
