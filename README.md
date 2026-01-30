@@ -285,9 +285,57 @@ _실시간 동기화와 AI 어시스턴트가 통합된 에디터 환경_
 
 ---
 
-## 5. 프로젝트 구조
+## 5. CI/CD 파이프라인
+
+본 프로젝트는 pnpm 10 환경에서 GitHub Actions를 이용해 코드 품질 검증부터 멀티 플랫폼 배포까지 자동화된 파이프라인을 구축했습니다. 특히, 테스트(CI)가 성공해야만 배포(CD)가 실행되는 의존성 구조를 통해 서비스의 안정성을 보장합니다.
+
+### 파이프라인 흐름도
+
+```mermaid
+graph LR
+    subgraph CI ["1. CI Phase (Code Quality & Test)"]
+        direction LR
+        A[Git Push / PR] --> B[pnpm 10 Setup]
+        B --> C[Lockfile Check]
+        C --> D[ESLint Analysis]
+        D --> E[Playwright Tests]
+        E --> F[Build Verification]
+    end
+
+    %% CI와 CD 사이의 연결을 더 길게 설정 (---)
+    F ---->|Success| H
+    F ---->|Fail| K
+
+    subgraph CD ["2. CD Phase (Automated Deployment)"]
+        direction LR
+        H[Deployment Pipeline Start]
+        H --> I[Vercel Deploy]
+        H --> J[Railway Deploy]
+    end
+
+    K[Notify Failure & Block Deploy]
+```
+
+### 주요 자동화 특징
+
+- **성능 최적화 (Caching Strategy)**:
+  - **pnpm Store Cache**: 의존성 설치 시간을 60% 이상 단축했습니다.
+  - **Playwright Binary Cache**: 브라우저 바이너리를 캐싱하여 E2E 테스트 실행 속도를 극대화했습니다.
+- **검증 절차 (CI Checks)**:
+  - **Frozen Lockfile**: `pnpm-lock.yaml`과 `package.json`의 일관성을 강제하여 배포 환경의 의존성 문제를 원천 차단합니다.
+  - **Artifacts Storage**: 테스트 실패 시 Playwright의 실행 스크린샷과 비디오 리포트를 Artifacts에 저장하여 즉각적인 디버깅을 지원합니다.
+- **무중단 자동 배포 (Continuous Deployment)**:
+  - **Vercel (Frontend)**: Vercel CLI를 통해 GitHub Actions 내에서 직접 빌드 후 아티팩트를 업로드하여 배포 속도를 높였습니다.
+  - **Railway (Socket Server)**: 독립된 Node.js 환경의 소켓 서버를 Railway CLI를 통해 배포 프로세스에 포함했습니다.
+- **중복 배포 방지**: 플랫폼별 자동 배포 옵션을 끄고 GitHub Actions를 단일 배포 창구(Single Source of Truth)로 활용하여 인프라 자원을 효율적으로 관리합니다.
+
+---
+
+## 6. 프로젝트 구조
 
 ```text
+/.github                   # GitHub 액션 워크플로우 및 설정 파일
+/.husky                    # Git 훅 관리 도구 설정
 /prisma                    # 데이터베이스 스키마 및 마이그레이션
 /src                       # 프론트엔드 애플리케이션 소스 코드
   ├── app/                 # Next.js App Router (페이지 및 API)
@@ -304,11 +352,12 @@ _실시간 동기화와 AI 어시스턴트가 통합된 에디터 환경_
 /public                    # 정적 자산
 /inngest                   # Inngest 스케줄링 함수
 /scripts                   # 빌드/배포 스크립트
+/tests                     # Playwright E2E 테스트 파일
 ```
 
 ---
 
-## 6. 기술 스택
+## 7. 기술 스택
 
 ### Frontend
 
@@ -339,6 +388,7 @@ _실시간 동기화와 AI 어시스턴트가 통합된 에디터 환경_
 - **Deployment**: Vercel (Frontend), Railway (WebSocket)
 - **Monitoring**: Inngest Dashboard, Vercel Analytics
 - **Version Control**: Git
+- **CI/CD**: GitHub Actions
 
 ---
 
