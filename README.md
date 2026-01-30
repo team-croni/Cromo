@@ -287,47 +287,53 @@ _실시간 동기화와 AI 어시스턴트가 통합된 에디터 환경_
 
 ## 5. CI/CD 파이프라인
 
-본 프로젝트는 pnpm 10 환경에서 GitHub Actions를 이용해 코드 품질 검증부터 멀티 플랫폼 배포까지 자동화된 파이프라인을 구축했습니다. 특히, 테스트(CI)가 성공해야만 배포(CD)가 실행되는 의존성 구조를 통해 서비스의 안정성을 보장합니다.
+본 프로젝트는 pnpm 환경에서 GitHub Actions를 이용해 코드 품질 검증부터 멀티 플랫폼 배포까지 자동화된 파이프라인을 구축했습니다. 특히, 테스트(CI)가 성공해야만 배포(CD)가 실행되는 의존성 구조를 통해 서비스의 안정성을 보장합니다.
 
 ### 파이프라인 흐름도
 
 ```mermaid
-graph LR
-    subgraph CI ["1. CI Phase (Code Quality & Test)"]
-        direction LR
-        A[Git Push / PR] --> B[pnpm 10 Setup]
-        B --> C[Lockfile Check]
+graph TD
+    subgraph CI ["CI Phase"]
+        direction TB
+        A[Git Push / PR] --> B[pnpm Setup]
+        B --> C{Parallel Checks}
         C --> D[ESLint Analysis]
-        D --> E[Playwright Tests]
-        E --> F[Build Verification]
+        C --> E[Build Integrity Check]
+        C --> F[Playwright E2E Tests]
     end
 
-    %% CI와 CD 사이의 연결을 더 길게 설정 (---)
-    F ---->|Success| H
-    F ---->|Fail| K
-
-    subgraph CD ["2. CD Phase (Automated Deployment)"]
-        direction LR
-        H[Deployment Pipeline Start]
-        H --> I[Vercel Deploy]
-        H --> J[Railway Deploy]
+    subgraph CD ["CD Phase"]
+        direction TB
+        G[Workflow Trigger] --> H[Vercel Pull & Sync Envs]
+        H --> I[Prisma Cross-Gen]
+        I --> J[Vercel Prebuilt & Deploy]
+        G --> K[Railway Service Deploy]
     end
 
-    K[Notify Failure & Block Deploy]
+    F ---->|All Success| G
+    E ---->|All Success| G
+    D ---->|All Success| G
+
+    J -.-> L((Service Live))
+    K -.-> L
 ```
 
 ### 주요 자동화 특징
 
-- **성능 최적화 (Caching Strategy)**:
-  - **pnpm Store Cache**: 의존성 설치 시간을 60% 이상 단축했습니다.
-  - **Playwright Binary Cache**: 브라우저 바이너리를 캐싱하여 E2E 테스트 실행 속도를 극대화했습니다.
-- **검증 절차 (CI Checks)**:
-  - **Frozen Lockfile**: `pnpm-lock.yaml`과 `package.json`의 일관성을 강제하여 배포 환경의 의존성 문제를 원천 차단합니다.
-  - **Artifacts Storage**: 테스트 실패 시 Playwright의 실행 스크린샷과 비디오 리포트를 Artifacts에 저장하여 즉각적인 디버깅을 지원합니다.
-- **무중단 자동 배포 (Continuous Deployment)**:
-  - **Vercel (Frontend)**: Vercel CLI를 통해 GitHub Actions 내에서 직접 빌드 후 아티팩트를 업로드하여 배포 속도를 높였습니다.
-  - **Railway (Socket Server)**: 독립된 Node.js 환경의 소켓 서버를 Railway CLI를 통해 배포 프로세스에 포함했습니다.
-- **중복 배포 방지**: 플랫폼별 자동 배포 옵션을 끄고 GitHub Actions를 단일 배포 창구(Single Source of Truth)로 활용하여 인프라 자원을 효율적으로 관리합니다.
+- **강력한 E2E 테스트 검증 (Playwright)**:
+  - **무결성 검증**: 서비스의 핵심 사용자 흐름(로그인, 메모 생성, 검색 등)을 배포 전 매번 자동으로 검증하여 회귀 버그를 방지합니다.
+  - **최적화된 캐싱**: Playwright 브라우저 바이너리를 GitHub Actions 캐시에 보관하여, 테스트 준비 시간을 매 실행마다 2~3분 이상 단축했습니다.
+  - **실패 분석(Artifacts)**: 테스트 실패 시 실행 영상, 스크린샷, 상세 로그가 담긴 HTML 리포트를 GitHub 아티팩트로 자동 업로드하여 즉각적인 디버깅 환경을 제공합니다.
+- **환경 변수 자동 동기화 (Single Source of Truth)**:
+  - **Vercel Pull**: GitHub Secrets에 모든 변수를 수동 등록하는 대신, `vercel pull` 명령을 통해 Vercel 대시보드에 설정된 실운영 환경 변수를 빌드 시점에 안전하게 동기화합니다.
+  - **보안 격리**: 개발/검증 단계(CI)에서는 더미 데이터를, 배포 단계(CD)에서는 실제 운영 데이터를 사용하는 이중화 전략을 취합니다.
+- **Cross-Platform Prisma 최적화**:
+  - **Multi-Binary Target**: 빌드 환경(GitHub Actions - Debian)과 실행 환경(Vercel - RHEL)의 차이로 발생하는 런타임 에러를 방지하기 위해 `schema.prisma`에서 `rhel-openssl-3.0.x`를 포함한 멀티 바이너리 생성을 자동화했습니다.
+- **배포 주도권 단일화 (Orchestration)**:
+  - **중복 배포 차단**: Vercel의 Ignored Build Step과 Railway의 Disconnect Branch 설정을 통해 각 플랫폼의 자체 자동 배포를 차단하고, 오직 GitHub Actions가 지휘하는 단일 배포 창구만 허용합니다.
+- **성능 및 안정성**:
+  - **Caching Strategy**: pnpm 스토어 및 Playwright 브라우저 바이너리 캐싱을 통해 파이프라인 실행 시간을 최적화했습니다.
+  - **Atomic Deployment**: Vercel CLI의 `--prebuilt` 옵션을 사용하여 빌드된 아티팩트를 그대로 업로드함으로써 배포 시점의 변동성을 제거했습니다.
 
 ---
 
@@ -383,12 +389,12 @@ graph LR
 - **Embedding**: Text-Embedding Models via OpenRouter
 - **NLP**: Custom RRF Algorithm for Hybrid Search
 
-### DevOps
+### DevOps & Infrastructure
 
 - **Deployment**: Vercel (Frontend), Railway (WebSocket)
-- **Monitoring**: Inngest Dashboard, Vercel Analytics
 - **Version Control**: Git
 - **CI/CD**: GitHub Actions
+- **Monitoring**: Inngest Dashboard, Axiom
 
 ---
 
