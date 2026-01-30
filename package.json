@@ -29,7 +29,8 @@
     "embedding:all": "tsx scripts/embedding-batch.ts all",
     "embedding:force:memo": "tsx scripts/embedding-batch.ts memo --force",
     "embedding:force:tag": "tsx scripts/embedding-batch.ts tag --force",
-    "embedding:force:all": "tsx scripts/embedding-batch.ts all --force"
+    "embedding:force:all": "tsx scripts/embedding-batch.ts all --force",
+    "prepare": "husky"
   },
   "dependencies": {
     "@axiomhq/js": "^1.3.1",
@@ -120,6 +121,7 @@
     "baseline-browser-mapping": "^2.9.14",
     "eslint": "^9.39.2",
     "eslint-config-next": "15.5.9",
+    "husky": "^9.1.7",
     "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",

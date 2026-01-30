@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
-// @ts-ignore
-import withPWA from "next-pwa";
+const withPWA = require("next-pwa");
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,

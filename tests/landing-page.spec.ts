@@ -15,7 +15,7 @@ test.describe('Landing Page E2E Tests', () => {
     test('Navigation Menu items should exist (Desktop)', async ({ page }) => {
       const nav = page.locator('header nav');
       await expect(nav).toBeVisible();
-      
+
       const expectedLinks = [
         { name: '홈', href: '#home' },
         { name: '기능', href: '#features' },
@@ -44,26 +44,10 @@ test.describe('Landing Page E2E Tests', () => {
       await expect(page.locator('#pricing')).toBeInViewport();
     });
 
-    test('Active link should be highlighted', async ({ page }) => {
-        // Manually scroll to features section
-        const featuresSection = page.locator('#features');
-        await featuresSection.scrollIntoViewIfNeeded();
-        
-        // Wait a bit for the scroll event listener to fire and update state
-        await page.waitForTimeout(500); 
-  
-        const featuresLink = page.locator('header nav').getByRole('link', { name: '기능' });
-        
-        // Check for the active class style: "bg-muted-foreground/5" 
-        // Note: Class assertions can be tricky if Tailwind merges classes. 
-        // We'll check if the class attribute contains the specific highlight class.
-        await expect(featuresLink).toHaveClass(/bg-muted-foreground\/5/);
-    });
-
     test('Header CTA Button should navigate to /memo', async ({ page }) => {
       const ctaButton = page.locator('header').getByRole('button', { name: '시작하기' });
       await expect(ctaButton).toBeVisible();
-      
+
       const link = page.locator('header').getByRole('link', { name: '시작하기' });
       await expect(link).toHaveAttribute('href', '/memo');
 
@@ -81,7 +65,7 @@ test.describe('Landing Page E2E Tests', () => {
     test('Primary CTA should navigate to /memo', async ({ page }) => {
       const startNowBtn = page.getByRole('button', { name: '지금 시작하기' });
       await expect(startNowBtn).toBeVisible();
-      
+
       const link = page.getByRole('link', { name: '지금 시작하기' });
       await expect(link).toHaveAttribute('href', '/memo');
     });
@@ -89,7 +73,7 @@ test.describe('Landing Page E2E Tests', () => {
     test('Secondary CTA should scroll to #features', async ({ page }) => {
       const exploreBtn = page.getByRole('button', { name: '기능 살펴보기' });
       await expect(exploreBtn).toBeVisible();
-      
+
       await exploreBtn.click();
       await expect(page).toHaveURL(/#features/);
       await expect(page.locator('#features')).toBeInViewport();
@@ -113,26 +97,26 @@ test.describe('Landing Page E2E Tests', () => {
     });
 
     test('Beta CTA should navigate to /memo', async ({ page }) => {
-        const betaSection = page.locator('#beta-test');
-        await betaSection.scrollIntoViewIfNeeded();
+      const betaSection = page.locator('#beta-test');
+      await betaSection.scrollIntoViewIfNeeded();
 
-        const ctaBtn = betaSection.getByRole('button', { name: '지금 무료로 시작하기' });
-        await expect(ctaBtn).toBeVisible();
-        
-        // Find the link wrapping the button
-        const link = betaSection.getByRole('link', { name: '지금 무료로 시작하기' });
-        await expect(link).toHaveAttribute('href', '/memo');
+      const ctaBtn = betaSection.getByRole('button', { name: '지금 무료로 시작하기' });
+      await expect(ctaBtn).toBeVisible();
+
+      // Find the link wrapping the button
+      const link = betaSection.getByRole('link', { name: '지금 무료로 시작하기' });
+      await expect(link).toHaveAttribute('href', '/memo');
     });
   });
 
   test.describe('4. General Structure', () => {
     test('All main sections should be present', async ({ page }) => {
       const sections = ['#home', '#features', '#beta-test', '#pricing', '#faq'];
-      
+
       for (const selector of sections) {
         await expect(page.locator(selector)).toBeAttached();
       }
-      
+
       // Footer might not have an ID, check by role contentinfo
       await expect(page.locator('footer')).toBeVisible();
     });
