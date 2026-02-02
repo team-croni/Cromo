@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSidebarContext } from "@hooks/use-sidebar-context";
 import LogoSymbolSvg from "@svgs/logo/logo-dark.svg";
 
@@ -26,10 +26,10 @@ export function MobileHeader() {
         </div>
 
         <button
-          className="p-2 rounded-md text-foreground"
+          className="-mr-2 p-2 rounded-md text-foreground"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <Menu className="h-5 w-5" />
+          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
     </header>

@@ -66,7 +66,7 @@ export function LiveShareStatus() {
   };
 
   return (
-    <div className="absolute left-0 top-0 h-14 w-[calc(100%-18px)] px-6 text-sm flex items-center justify-between z-10">
+    <div className="absolute left-0 top-0 h-14 w-full md:w-[calc(100%-18px)] px-6 text-sm flex items-center justify-between z-10">
       <div
         className='absolute top-0 left-0 w-full h-30 -z-1 transition-all duration-75 pointer-events-none'
         style={{ background: "linear-gradient(var(--color-background) 25%, transparent)" }}
@@ -121,7 +121,7 @@ export function LiveShareStatus() {
               )}
             </button>
             {/* 공유 링크 생성 버튼 */}
-            <button
+            {/* <button
               onClick={generateShareLink}
               className={`text-xs text-muted-foreground hover:text-foreground group flex items-center ${isGeneratingShareLink ? 'opacity-50 pointer-events-none' : ''}`}
               disabled={isGeneratingShareLink || !isCurrentMemoOwner}
@@ -145,10 +145,10 @@ export function LiveShareStatus() {
                     공유 링크
                   </div>
                 )}
-            </button>
+            </button> */}
 
             {/* 공유 링크 복사 버튼 */}
-            {shareUrl && (
+            {/* shareUrl && (
               <button
                 onClick={copyToClipboard}
                 className="text-xs text-muted-foreground hover:text-foreground group flex items-center"
@@ -163,13 +163,13 @@ export function LiveShareStatus() {
                   {copied ? '복사 완료' : '링크 복사'}
                 </div>
               </button>
-            )}
+            ) */}
 
             <LiveShareSettingsDropdown />
           </div>
         )}
 
-        <div className={`absolute left-[calc(50%-18px)] -translate-x-1/2 text-base transition-all duration-75 ease-out font-medium text-center text-foreground line-clamp-1 ${showTitle ? 'opacity-100' : 'translate-y-1 opacity-0'}`}>
+        <div className={`absolute hidden md:block left-[calc(50%-18px)] -translate-x-1/2 text-base transition-all duration-75 ease-out font-medium text-center text-foreground line-clamp-1 ${showTitle ? 'opacity-100' : 'translate-y-1 opacity-0'}`}>
           {title || ''}
         </div>
       </div>

@@ -65,11 +65,6 @@ export function LiveShareSettingsDropdown() {
             className={`absolute overflow-hidden mt-2 min-w-40 bg-background border rounded-2xl shadow-xl/20 z-100 px-2 py-2.5 right-0`}
           >
             <div className={`absolute inset-0 z-50 ${isLiveShareLoading ? 'bg-background opacity-50' : 'pointer-events-none opacity-0'}`} />
-            <div className="flex items-center justify-between px-3 py-2">
-              <p className='font-bold text-foreground text-sm'>라이브 설정</p>
-            </div>
-            {/* Dropdown separator */}
-            <div className="h-px bg-border mx-1 my-2" />
             <div className="space-y-1">
               <DropdownSection title="접근 권한">
                 <DropdownItem

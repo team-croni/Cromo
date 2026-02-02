@@ -1,5 +1,12 @@
 /* Tiptap Editor Styles */
 @layer base {
+  .editor::-webkit-scrollbar {
+    display: none !important;
+    @media (min-width: 768px) {
+      display: initial !important;
+    }
+  }
+
   .tiptap {
     position: relative;
     outline: none;
@@ -24,6 +31,7 @@
     margin: 0;
     line-height: 2;
     white-space: pre-wrap;
+    word-break: break-all;
   }
 
   .tiptap strong {

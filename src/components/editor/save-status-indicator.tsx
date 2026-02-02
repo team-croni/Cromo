@@ -33,14 +33,14 @@ export const SaveStatusIndicator = memo(() => {
 
   if (isSaving) {
     return (
-      <div className="ml-auto flex items-center text-xs pr-2 text-foreground/50 select-none">
+      <div className="hidden md:flex ml-auto items-center text-xs pr-2 text-foreground/50 select-none">
         <p className="text-nowrap slide-up">저장 중{retryCountText}</p>
         <LoaderCircle className="w-3.5 h-3.5 ml-1.5 animate-spin" />
       </div>
     );
   } else {
     return (
-      <div className="ml-auto flex items-center text-xs pr-2 text-foreground/50 select-none">
+      <div className="hidden md:flex ml-auto items-center text-xs pr-2 text-foreground/50 select-none">
         <p className="text-nowrap fade-in">저장 완료</p>
         <svg
           className="w-3.5 h-3.5 ml-1.5 check-animation"

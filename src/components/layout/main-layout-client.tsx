@@ -75,7 +75,7 @@ export function MemoLayoutClient() {
 
   return (
     <MainLayout>
-      <div className="flex-1 flex flex-col md:flex-row h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-4rem)] md:h-screen">
         <div className={`flex flex-col z-20 will-change-transform transition-all ${isMemoBrowserOpen ? '' : 'absolute h-full -translate-x-full opacity-0 pointer-events-none'}`}>
           <div
             ref={memoBrowserRef}

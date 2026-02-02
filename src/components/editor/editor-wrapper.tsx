@@ -176,7 +176,7 @@ export function EditorWrapper() {
 
   return (
     <div className="relative flex flex-col h-full">
-      <div ref={scrollContainerRef} className="flex pl-12 pr-10 flex-col h-full overflow-y-scroll scrollbar-normal">
+      <div ref={scrollContainerRef} className="flex px-0 md:pl-12 md:pr-10 flex-col h-full overflow-y-scroll editor scrollbar-normal">
         <Editor key={memoData.id} />
       </div>
     </div>

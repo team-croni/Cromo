@@ -50,7 +50,7 @@ export function CurrentCursor() {
       )}
       {/* Current user indicator (User label/icon) */}
       <div
-        className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-25 text-xs text-muted-foreground/60 dark:text-muted-foreground/40 slide-right select-none z-10"
+        className="absolute flex items-center left-5.5 md:left-3 top-0 text-right -translate-x-full transition-all ease-out duration-25 text-xs text-muted-foreground/60 dark:text-muted-foreground/40 slide-right select-none z-10"
         style={{
           top: `${top}px`,
           height: `${height}px`,

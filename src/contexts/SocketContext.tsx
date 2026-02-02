@@ -12,6 +12,7 @@ type SocketContextType = {
   isLiveShareDisabled: boolean;
   connectionFailed: boolean;
   existingUsers: UserInfo[];
+  setConnectionFailed: (connectionFailed: boolean) => void;
   joinMemoRoom: (memoId: string) => void;
   leaveMemoRoom: (memoId: string) => void;
   sendMemoContentChange: (data: { memoId: string; content: string; title: string; cursorPosition?: any }) => void;
@@ -34,6 +35,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     isLiveShareDisabled,
     connectionFailed,
     existingUsers,
+    setConnectionFailed,
     joinMemoRoom,
     leaveMemoRoom,
     sendMemoContentChange,
@@ -57,6 +59,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     isLiveShareDisabled,
     connectionFailed,
     existingUsers,
+    setConnectionFailed,
     joinMemoRoom,
     leaveMemoRoom,
     sendMemoContentChange,

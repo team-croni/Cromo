@@ -38,7 +38,7 @@ export const useSocket = () => {
   const { data: memoData } = useMemo();
   const queryClient = useQueryClient();
   const enableSocket = memoData?.isLiveShareEnabled;
-  const maxReconnectAttempts = 5;
+  const maxReconnectAttempts = 3;
   // Live Share가 활성화된 경우에만 소켓 연결 상태를 사용
   const effectiveIsConnected = memoData?.isLiveShareEnabled ? isConnected : false;
   // memoData가 있으면 그 ID를 사용 (항상 UUID), 없으면 urlMemoId 사용
@@ -425,8 +425,9 @@ export const useSocket = () => {
     effectiveIsConnected,
     isConnected,
     isLiveShareDisabled,
-    connectionFailed, // 연결 실패 상태 추가
+    connectionFailed,
     existingUsers,
+    setConnectionFailed,
     joinMemoRoom,
     leaveMemoRoom,
     sendMemoContentChange,

@@ -19,7 +19,7 @@ export function ScrollFadeOverlay() {
   const shouldShowToolbar = !isDisabledToolbarButton;
 
   return (
-    <div className={`absolute left-0 bottom-0 w-[calc(100%-18px)] z-20 pointer-events-none transition-all duration-150 ${showContentControls ? 'h-70' : shouldShowToolbar ? 'h-50' : 'h-10'}`}>
+    <div className={`absolute left-0 bottom-0 w-full md:w-[calc(100%-18px)] z-20 pointer-events-none transition-all duration-150 ${showContentControls ? 'h-70' : shouldShowToolbar ? 'h-50' : 'h-10'}`}>
       <div
         className="absolute w-full h-full"
         style={{

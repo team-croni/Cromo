@@ -65,6 +65,7 @@ const useEditorHook = () => {
     socket,
     effectiveIsConnected,
     isConnected,
+    setConnectionFailed,
     sendMemoContentChange,
     sendCursorMove,
     on,
@@ -383,6 +384,7 @@ const useEditorHook = () => {
         setTitle(memoData.title);
         setLastSaved(new Date(memoData.updatedAt));
         setCurrentMemoId(memoData.id);
+        setConnectionFailed(false);
         initialTitleRef.current = memoData.title; // 초기 제목 저장
 
         if (editor) {

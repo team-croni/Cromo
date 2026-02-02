@@ -50,9 +50,9 @@ export function Sidebar() {
             <LogoSymbolSvg className={actualIsCollapsed ? 'h-7 w-7' : 'h-6.5 w-6.5 ml-1'} />
             <p className={`ml-2 text-[26px] font-medium font-baloo tracking-[-0.5px] text-foreground ${actualIsCollapsed ? 'hidden' : ''}`}>Cromo</p>
           </Link>
-          {!isCollapsed &&
+          {(!isCollapsed || isMobile) &&
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={() => isMobile ? setIsOpen(false) : setIsCollapsed(!isCollapsed)}
               className="p-3 text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 rounded-full"
             >
               <PanelLeftClose className="h-5 w-5" />

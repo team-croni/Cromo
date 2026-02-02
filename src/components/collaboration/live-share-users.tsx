@@ -12,7 +12,7 @@ import CustomTooltip from "@components/ui/custom-tooltip";
 
 export function LiveShareUsers() {
   const { data: session } = useSession();
-  const { user: currentUser } = useUser(); // useUser 훅을 사용하여 캐시된 사용자 정보 가져오기
+  const { user: currentUser } = useUser();
   const { existingUsers, effectiveIsConnected, socket, connectionFailed } = useSocketContext();
   const { data: memoData } = useMemo();
   const [otherUsers, setOtherUsers] = useState<UserInfo[]>(existingUsers);
@@ -58,17 +58,18 @@ export function LiveShareUsers() {
 
   return (
     <div className="flex items-center gap-2">
-      {(isConnecting || effectiveIsConnected) && !connectionFailed ? (
-        <span className="px-2.5 py-1 border border-destructive/35 bg-transparent backdrop-blur-sm rounded-xl text-xs flex items-center mr-1.5">
-          <span className="w-1.25 h-1.25 bg-destructive mr-2 rounded-full animate-pulse" />
-          <span className="text-destructive">LIVE ON</span>
-        </span>
-      ) : (
-        <span className="px-2.5 py-1 border bg-transparent backdrop-blur-sm rounded-xl text-xs flex items-center mr-1.5">
-          <span className="w-1.25 h-1.25 bg-muted-foreground/70 rounded-full mr-2" />
-          <span className="text-muted-foreground/70">LIVE OFF</span>
-        </span>
-      )}
+      {!connectionFailed ?
+        (isConnecting || effectiveIsConnected) ? (
+          <span className="px-2.5 py-1 border border-destructive/35 bg-transparent backdrop-blur-sm rounded-xl text-xs flex items-center mr-1.5">
+            <span className="w-1.25 h-1.25 bg-destructive mr-2 rounded-full animate-pulse" />
+            <span className="text-destructive">LIVE ON</span>
+          </span>
+        ) : (
+          <span className="px-2.5 py-1 border bg-transparent backdrop-blur-sm rounded-xl text-xs flex items-center mr-1.5">
+            <span className="w-1.25 h-1.25 bg-muted-foreground/70 rounded-full mr-2" />
+            <span className="text-muted-foreground/70">LIVE OFF</span>
+          </span>
+        ) : null}
       {isConnecting ?
         connectionFailed ?
           <span className="text-destructive text-xs">실시간 연결 실패</span>

@@ -52,8 +52,8 @@ export function ErrorDisplay() {
   };
 
   return (
-    <div className={`absolute bottom-26 left-1/2 transform -translate-x-1/2 z-50 transition-all ${isVisible ? '' : 'opacity-0 pointer-events-none scale-80'}`}>
-      <div className="bg-inverse text-sm text-destructive font-normal px-5 py-2 rounded-xl shadow-lg/3 dark:shadow-lg/15 flex items-center">
+    <div className={`absolute px-4 w-full bottom-26 left-1/2 transform -translate-x-1/2 z-50 transition-all ${isVisible ? '' : 'opacity-0 pointer-events-none scale-80'}`}>
+      <div className="w-fit mx-auto bg-inverse text-sm text-destructive font-normal px-5 py-2 rounded-xl shadow-lg/3 dark:shadow-lg/15 flex items-center">
         <TriangleAlert className="w-5 h-5 mr-4" />
         <span>{getErrorMessageByType()}</span>
         <button

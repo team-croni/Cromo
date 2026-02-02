@@ -16,7 +16,7 @@ export const ToolbarButton = ({
 }: ToolbarButtonProps) => {
   return (
     <button
-      className={`flex items-center justify-center rounded ${label ? 'px-3 h-8' : 'w-8 h-8'} ${isActive
+      className={`shrink-0 flex items-center justify-center rounded ${label ? 'px-3 h-8' : 'w-8 h-8'} ${isActive
         ? "bg-primary! text-primary-foreground"
         : "hover:bg-foreground/5"
         } ${className}`}

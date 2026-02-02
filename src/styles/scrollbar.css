@@ -1,5 +1,6 @@
 /* 스크롤바 스타일 */
 .scrollbar-normal::-webkit-scrollbar {
+  display: initial;
   width: 20px;
   height: 20px;
 }
@@ -28,6 +29,7 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar {
+  display: initial;
   width: 18px;
   height: 18px;
 }
@@ -53,6 +55,7 @@
 }
 
 .scrollbar-full::-webkit-scrollbar {
+  display: initial;
   width: 8px;
   height: 8px;
 }
@@ -81,9 +84,4 @@
 /* Hide scrollbars */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
