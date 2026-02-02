@@ -58,13 +58,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # ... pnpm 설정 생략
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+
+      - name: Check for socket-server changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            socket_server:
+              - 'socket-server/**'
 
       - name: Install Railway CLI
+        if: steps.filter.outputs.socket_server == 'true'
         run: npm install -g @railway/cli
 
-      # [수정] -y 옵션 제거
       - name: Deploy to Railway
+        if: steps.filter.outputs.socket_server == 'true'
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

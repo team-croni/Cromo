@@ -32,10 +32,8 @@ test.describe('Landing Page E2E Tests', () => {
     });
 
     test('Header CTA Button should navigate to /memo', async ({ page }) => {
-      const ctaButton = page.locator('header').getByRole('button', { name: '시작하기' });
-      await expect(ctaButton).toBeVisible();
-
       const link = page.locator('header').getByRole('link', { name: '시작하기' });
+      await expect(link).toBeVisible();
       await expect(link).toHaveAttribute('href', '/memo');
 
       await link.click();
