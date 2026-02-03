@@ -28,21 +28,21 @@ export function PricingSection() {
   }, []);
 
   return (
-    <section id="pricing" className="relative py-34 bg-[#101012]">
+    <section id="pricing" className="relative pt-34 pb-24 sm:py-34 bg-[#101012] overflow-hidden">
       <div className="absolute left-1/2 -translate-1/2 top-120 w-200 h-160 rounded-full bg-muted-foreground/8 blur-[100px] pointer-events-none" />
       <div className="container px-4 mx-auto">
-        <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-20 opacity-0">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-transparent bg-clip-text bg-linear-to-b from-white to-white/60">
+        <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-14 sm:mb-20 opacity-0">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6 text-transparent bg-clip-text bg-linear-to-b from-white to-white/60">
             가격 정책
           </h2>
-          <p className="text-xl text-zinc-400">
+          <p className="text-lg sm:text-xl text-zinc-400">
             베타 버전에서는 모든 프리미엄 기능을 무료로 이용 가능합니다.
           </p>
         </div>
 
-        <div className="mt-20">
+        <div>
           {/* BETA Plan */}
-          <div ref={cardRef} className="relative w-90 h-126 mx-auto shadow-2xl/40 hover:scale-102 transition-all duration-300 ease-out opacity-0 delay-1">
+          <div ref={cardRef} className="relative w-full max-w-90 h-126 mx-auto shadow-2xl/40 hover:scale-102 transition-all duration-300 ease-out opacity-0 delay-1">
             <div className="absolute -inset-px bg-linear-to-r from-transparent via-white/60 to-transparent animate-shimmer-smooth rounded-3xl" />
             <div className="absolute flex flex-col p-6 inset-0 border rounded-3xl bg-sidebar">
               <div className="text-center mb-6">

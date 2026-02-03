@@ -9,27 +9,20 @@ interface MemoProps {
   isLive?: boolean;
   isArchived?: boolean;
   tags?: string[];
-  position: {
-    left?: string;
-    top?: string;
-    right?: string;
-    bottom?: string;
-  }
   className?: string;
 }
 
 export function MemoPreview() {
 
   return (
-    <div className="relative w-full min-w-160 max-w-175">
+    <div className="flex justify-center relative w-[calc(100vw-64px)] md:w-[calc(100vw-160px)] xl:w-full h-100 xl:h-0 -bottom-60 xl:bottom-0 xl:min-w-160 max-w-175">
       <Memo
         date='1시간 전'
         title='✈️ 가족여행 계획 (2026. 02. 23 ~ 2026. 03.01)'
         content='부모님과 함께 제주도로 여행 계획. 항공편과 숙소 예약 필요. 주요 관광지: 한라산, 우도, 성산일출봉 등. 예산 및 일정 조율 중.'
         isLive
         tags={['가족여행', '제주도', '2026']}
-        position={{ left: '-10px', top: '-220px' }}
-        className="floating2 scale-90"
+        className="floating2 scale-90 md:scale-90 -top-7.5 md:-top-55 max-md:animate-none! md:left-[calc(50%-150px)]"
       />
       <Memo
         date='1달 전'
@@ -37,8 +30,7 @@ export function MemoPreview() {
         content='팀 목표 설정 및 업무 분담 논의. Q4 목표 달성을 위한 전략 수립. 다음 회의는 다음주 화요일 오후 2시.'
         isArchived
         tags={['회의', '팀']}
-        position={{ left: '70px', top: '30px' }}
-        className="floating"
+        className="floating scale-95 md:scale-100 -top-27.5 md:top-7.5 max-md:animate-none! md:left-[calc(50%-60px)]"
       />
       <Memo
         date='2025. 11. 13'
@@ -47,19 +39,17 @@ export function MemoPreview() {
         isArchived
         isLive
         tags={['프로젝트', 'TODO']}
-        position={{ right: '50px', top: '-110px' }}
-        className="floating3 scale-120"
+        className="floating3 scale-100 md:scale-120 -top-55 md:-top-27.5 max-md:animate-none! md:left-[calc(50%+110px)]"
       />
-      <div className="absolute w-150 h-2 rounded-full bg-black blur-xl -bottom-70 left-1/2 -translate-x-1/2" />
+      <div className="hidden sm:block absolute w-150 h-2 rounded-full bg-black blur-xl bottom-40 xl:-bottom-70 left-1/2 -translate-x-1/2" />
     </div>
   );
 }
 
-const Memo = ({ date, title, content, isLive, isArchived, tags, position, className }: MemoProps) => {
+const Memo = ({ date, title, content, isLive, isArchived, tags, className }: MemoProps) => {
   return (
     <div
-      className={`absolute w-100 flex flex-col bg-background select-none px-2 py-2 border border-muted-foreground/20 rounded-2xl shadow-xl/30 ${className}`}
-      style={position}
+      className={`absolute w-full md:w-100 flex flex-col bg-background select-none px-2 py-2 border border-muted-foreground/20 rounded-2xl shadow-xl/30 ${className}`}
     >
       <div className="flex p-2 pt-2 items-center justify-between">
         <div className="flex items-center">

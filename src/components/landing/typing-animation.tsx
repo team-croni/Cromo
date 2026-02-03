@@ -45,10 +45,10 @@ export function TypingAnimation() {
   }, [currentText, currentIndex, isDeleting]);
 
   return (
-    <div className="w-75 h-15 px-5 flex items-center rounded-2xl bg-linear-to-r from-black/50 to-transparent text-blue-500 text-2xl whitespace-nowrap">
-      <Search className="w-7 h-7 mr-3" />
+    <div className="w-full md:w-75 h-12 sm:h-15 px-4 sm:px-5 flex items-center rounded-xl sm:rounded-2xl bg-linear-to-r from-black/50 to-transparent text-blue-500 text-lg sm:text-2xl whitespace-nowrap">
+      <Search className="w-5 h-5 sm:w-7 sm:h-7 mr-3" />
       {composeKorean(currentText)}
-      <span className="ml-0.5 w-[1.5px] h-6 bg-blue-400 cursor-pulse" />
+      <span className="ml-0.5 w-[1.5px] h-5 sm:h-6 bg-blue-400 cursor-pulse" />
     </div>
   );
 }

@@ -30,9 +30,9 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="pt-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground/70">
-        <div className="container flex items-center justify-between">
-          <p>&copy; {currentYear} Croni. All rights reserved.</p>
+      <div className="pt-8 sm:pt-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground/70">
+        <div className="container flex sm:items-center justify-between flex-col-reverse sm:flex-row gap-3 sm:gap-0">
+          <p className="text-left sm:text-center">&copy; {currentYear} Croni. All rights reserved.</p>
           <div className="flex space-x-4 text-sm">
             <Link href="/terms" className="hover:text-foreground transition-colors">이용 약관</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">개인정보 처리방침</Link>

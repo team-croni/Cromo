@@ -40,19 +40,19 @@ export function FeaturesSection() {
   }, []);
 
   return (
-    <section id="features" className="relative pt-30 pb-4 bg-[#101012] z-10">
+    <section id="features" className="relative pt-30 pb-4 bg-[#101012] z-10 overflow-hidden">
       <div className="container px-4 mx-auto">
         <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-20 opacity-0">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
             Cromo만의 특별한 기능들
           </h2>
-          <p className="text-xl text-zinc-400">
+          <p className="text-lg sm:text-xl text-zinc-400">
             단순한 메모앱이 아닌, 당신의 생각을 스마트하게 정리해주는 파트너입니다.
           </p>
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-32">
           {[
             {
               icon: FileText,
@@ -92,14 +92,14 @@ export function FeaturesSection() {
         </div>
 
         {/* 메모 관리 기능 섹션 */}
-        <div className="flex justify-center items-center min-h-150 mt-40">
-          <div ref={memoSectionRef} className="relative mr-36 mb-16 opacity-0">
-            <div className="absolute -left-20 top-14 w-140 h-40 rounded-full bg-blue-500/15 blur-[100px]" />
+        <div className="flex flex-col xl:flex-row justify-center items-center min-h-150 mt-40">
+          <div ref={memoSectionRef} className="relative xl:mr-36 mb-10 sm:mb-16 opacity-0 max-w-150">
+            <div className="absolute -left-15 xl:-left-20 top-14 w-160 xl:w-140 h-40 rounded-full bg-blue-500/15 blur-[100px]" />
             <TypingAnimation />
             <h2 className="text-xl md:text-[2.5rem] font-medium mt-5 mb-5 text-transparent bg-clip-text bg-linear-to-b from-foreground to-[#a2a2a8]">
               똑똑한 메모 관리 & 검색
             </h2>
-            <p className="text-lg leading-normal text-muted-foreground whitespace-break-spaces">
+            <p className="text-base sm:text-lg leading-normal text-muted-foreground whitespace-break-spaces">
               AI가 메모 내용을 분석하여 자동으로 카테고리화하고 관련 정보를 제안합니다.
               또, AI 기반 메모 검색을 통해 찾기 힘들었던 오래된 메모들을 쉽고 빠르게 찾을 수 있습니다.
             </p>
@@ -110,17 +110,17 @@ export function FeaturesSection() {
         </div>
 
         {/* 에디터 기능 미리보기 섹션 */}
-        <div className="flex justify-center items-center min-h-150 my-44">
-          <div ref={editorSectionRef} className="relative mr-36 mb-16 opacity-0">
-            <div className="absolute -left-20 top-14 w-140 h-40 rounded-full bg-red-500/15 blur-[100px]" />
-            <div className="inline-flex items-center px-5 py-2 text-base text-destructive rounded-full bg-black/70 border border-destructive/50 shadow-lg/50">
+        <div className="flex flex-col xl:flex-row justify-center items-center min-h-150 my-20 sm:my-44">
+          <div ref={editorSectionRef} className="relative xl:mr-36 mb-16 sm:mb-24 xl:mb-16 opacity-0 max-w-150">
+            <div className="absolute -left-15 xl:-left-20 top-14 w-160 xl:w-140 h-40 rounded-full bg-red-500/15 blur-[100px]" />
+            <div className="inline-flex items-center px-5 py-2 text-sm sm:text-base text-destructive rounded-full bg-black/70 border border-destructive/50 shadow-lg/50">
               <p className="w-1.5 h-1.5 rounded-full bg-destructive mr-3 animate-pulse"></p>
               <p className="animate-pulse mb-px">LIVE ON</p>
             </div>
             <h2 className="text-xl md:text-[2.5rem] font-medium mt-5 mb-5 text-transparent bg-clip-text bg-linear-to-b from-foreground to-[#a2a2a8]">
               실시간 공유 & 협업
             </h2>
-            <p className="text-lg leading-normal text-muted-foreground whitespace-break-spaces">
+            <p className="text-base sm:text-lg leading-normal text-muted-foreground whitespace-break-spaces">
               소켓 기반의 강력한 실시간 동기화 기술을 통해, 링크 하나로 간편하게 협업 공간을 공유할 수 있습니다.
               여러 명의 팀원이 동시에 접속하여도 지연 없이 매끄럽게 메모를 확인하고 수정할 수 있습니다.
             </p>

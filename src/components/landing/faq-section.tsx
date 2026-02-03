@@ -32,7 +32,7 @@ export function FaqSection() {
   return (
     <section id="faq" className="relative bg-[#151618] py-30 z-10">
       <div className="container px-4 mx-auto max-w-3xl">
-        <h2 className="text-3xl font-bold mb-12 text-center">자주 묻는 질문</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-12 text-center">자주 묻는 질문</h2>
         <div className="space-y-4 max-w-3xl mx-auto">
           {faqs.map((faq, index) => (
             <div key={index} className="border rounded-2xl bg-background overflow-hidden">
@@ -42,8 +42,8 @@ export function FaqSection() {
                 aria-expanded={openIndex === index}
                 aria-controls={`faq-answer-${index}`}
               >
-                <span className="font-medium">{faq.question}</span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${openIndex === index ? 'rotate-180 text-foreground' : 'text-muted-foreground/50'}`} />
+                <span className="text-sm sm:text-base font-medium">{faq.question}</span>
+                <ChevronDown className={`w-5 h-5 ml-4 transition-transform ${openIndex === index ? 'rotate-180 text-foreground' : 'text-muted-foreground/50'}`} />
               </button>
               {openIndex === index && (
                 <div
@@ -58,7 +58,7 @@ export function FaqSection() {
         </div>
       </div>
       <div className="container">
-        <div className="mt-16 text-center p-20">
+        <div className="mt-16 text-center py-10 px-0 md:p-20">
           <h3 className="text-xl font-semibold mb-2">원하는 답변을 찾지 못하셨나요?</h3>
           <p className="text-muted-foreground mb-6">
             지원 팀에 직접 문의해 주세요. 영업일 기준 24시간 이내에 답변을 드릴 수 있도록 노력하겠습니다.
@@ -66,7 +66,7 @@ export function FaqSection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="/contact"
-              className="px-6 py-3 rounded-full font-medium transition duration-200 hover:text-foreground border border-muted-foreground/30 bg-transparent hover:border-muted-foreground/80"
+              className="px-6 py-3 rounded-full font-medium text-sm sm:text-base transition duration-200 hover:text-foreground border border-muted-foreground/30 bg-transparent hover:border-muted-foreground/80"
             >
               이메일로 문의하기
             </a>

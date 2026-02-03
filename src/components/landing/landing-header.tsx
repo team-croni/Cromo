@@ -99,7 +99,7 @@ export function LandingHeader() {
         {/* Right side - Auth Buttons */}
         <div className="w-1/3 ml-auto flex items-center justify-end gap-4 text-sm">
           <Link href="/memo">
-            <div className="flex items-center justify-center py-2 px-5 text-foreground transition duration-200 hover:text-foreground border border-muted-foreground/30 bg-transparent hover:bg-black/50 hover:border-primary rounded-full shine-border">
+            <div className="flex items-center justify-center py-2 px-5 text-foreground transition duration-200 hover:text-foreground border border-muted-foreground/30 bg-transparent hover:bg-black/50 hover:border-primary rounded-full shine-border whitespace-nowrap">
               시작하기
               <ChevronRight className="w-4 h-4 ml-2 -mr-1.5" />
             </div>

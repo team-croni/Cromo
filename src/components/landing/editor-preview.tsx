@@ -3,42 +3,46 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { useIsMobile } from "@hooks/useMediaQuery";
 
 export function EditorPreview() {
   const focusIndicatorRef = useRef<HTMLDivElement>(null);
   const [focusIndicatorPosition, setFocusIndicatorPosition] = useState({ top: 230 });
   const [focusIndicatorPosition2, setFocusIndicatorPosition2] = useState({ top: 384 });
   const [checked, setChecked] = useState(false);
+  const isMobile = useIsMobile();
 
   // 포커스 인디케이터 애니메이션을 위한 효과
   useEffect(() => {
-    const positioniInterval = setInterval(() => {
-      setFocusIndicatorPosition(prev => ({
-        top: prev.top === 230 ? 444 : prev.top === 444 ? 331 : 230,
-      }));
-    }, 3000);
+    if (!isMobile) {
+      const positioniInterval = setInterval(() => {
+        setFocusIndicatorPosition(prev => ({
+          top: prev.top === 230 ? 444 : prev.top === 444 ? 331 : 230,
+        }));
+      }, 3000);
 
-    const positioniInterval2 = setInterval(() => {
-      setFocusIndicatorPosition2(prev => ({
-        top: prev.top === 384 ? 407 : prev.top === 407 ? 148 : 384,
-      }));
-    }, 5000);
+      const positioniInterval2 = setInterval(() => {
+        setFocusIndicatorPosition2(prev => ({
+          top: prev.top === 384 ? 407 : prev.top === 407 ? 148 : 384,
+        }));
+      }, 5000);
 
-    // 저장 상태 변경 효과
-    const checkedInterval = setInterval(() => {
-      setChecked(prev => !prev);
-    }, 9000);
+      // 저장 상태 변경 효과
+      const checkedInterval = setInterval(() => {
+        setChecked(prev => !prev);
+      }, 9000);
 
-    return () => {
-      clearInterval(positioniInterval);
-      clearInterval(positioniInterval2);
-      clearInterval(checkedInterval);
-    };
-  }, []);
+      return () => {
+        clearInterval(positioniInterval);
+        clearInterval(positioniInterval2);
+        clearInterval(checkedInterval);
+      };
+    }
+  }, [isMobile]);
 
   return (
-    <div className="w-full min-w-160 max-w-160 pointer-events-none select-none">
-      <div className="pl-26 pr-14 bg-background border rounded-2xl relative mask-fade">
+    <div className="w-full xl:min-w-160 max-w-160 pointer-events-none select-none">
+      <div className="pl-0 pr-0 md:pl-26 md:pr-14 bg-background border rounded-2xl relative mask-fade">
         {/* 에디터 콘텐츠 영역 */}
         <div className="tiptap text-[13px] w-full pt-2! pb-10! max-h-180 relative">
           {/* 제목 입력 필드 */}
@@ -90,39 +94,42 @@ export function EditorPreview() {
           </div>
 
           {/* 실시간 커서 표시 - 다른 사용자들 */}
-          <div
-            className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-200 text-xs select-none"
-            style={{ top: `${focusIndicatorPosition.top}px`, height: '14px' }}
-          >
-            <div className="flex -space-x-2 mr-1">
-              <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
-                <Image src="https://i.pravatar.cc/250?img=31" alt="logo" fill />
+          {!isMobile && (
+            <>
+              <div
+                className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-200 text-xs select-none"
+                style={{ top: `${focusIndicatorPosition.top}px`, height: '14px' }}
+              >
+                <div className="flex -space-x-2 mr-1">
+                  <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
+                    <Image src="https://i.pravatar.cc/250?img=31" alt="logo" fill />
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />
               </div>
-            </div>
-            <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />
-          </div>
 
-          <div
-            className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-200 text-xs select-none"
-            style={{ top: `${focusIndicatorPosition2.top}px`, height: '14px' }}
-          >
-            <div className="flex -space-x-2 mr-1">
-              <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
-                <Image src="https://i.pravatar.cc/250?img=11" alt="logo" fill />
+              <div
+                className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-200 text-xs select-none"
+                style={{ top: `${focusIndicatorPosition2.top}px`, height: '14px' }}
+              >
+                <div className="flex -space-x-2 mr-1">
+                  <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
+                    <Image src="https://i.pravatar.cc/250?img=11" alt="logo" fill />
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />
               </div>
-            </div>
-            <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />
-          </div>
 
-          {/* 실시간 커서 표시 - 현재 사용자 */}
-          <div
-            ref={focusIndicatorRef}
-            className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-50 text-xs text-muted-foreground/60 dark:text-muted-foreground/40 slide-right select-none"
-            style={{ top: '76px', height: '14px' }}
-          >
-            <span className="mr-1 slide-right">ITALIC</span>
-            <ChevronRight className="w-5 h-5 stroke-1.5" />
-          </div>
+              <div
+                ref={focusIndicatorRef}
+                className="absolute flex items-center left-3 top-0 text-right -translate-x-full transition-all ease-out duration-50 text-xs text-muted-foreground/60 dark:text-muted-foreground/40 slide-right select-none"
+                style={{ top: '76px', height: '14px' }}
+              >
+                <span className="mr-1 slide-right">ITALIC</span>
+                <ChevronRight className="w-5 h-5 stroke-1.5" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
