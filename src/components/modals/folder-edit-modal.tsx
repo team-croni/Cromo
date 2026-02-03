@@ -244,7 +244,11 @@ export const FolderEditModal = () => {
   };
 
   return (
-    <Modal className="w-full max-w-104 bg-background border rounded-2xl">
+    <Modal
+      isOpen={modalProps.isOpen}
+      onClose={modalProps.onClose}
+      className="w-full max-w-104 bg-background border rounded-2xl"
+    >
       <ModalHeader title="폴더 설정">
         <CustomTooltip
           message={

@@ -1,23 +1,36 @@
-import { useFolderEditModal } from "@/hooks/useFolderEditModal";
+"use client";
+
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface DialogProps {
+  isOpen: boolean;
+  onClose: () => void;
   className?: string;
   children?: React.ReactNode;
 }
 
-export function Modal({ className, children }: DialogProps) {
-  const { modalProps } = useFolderEditModal();
+export function Modal({ isOpen, onClose, className, children }: DialogProps) {
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 ${modalProps.isOpen ? '' : 'pointer-events-none'}`}>
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className={`fixed inset-0 flex items-center justify-center z-50 ${isOpen ? '' : 'pointer-events-none'}`}>
       <div
-        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition ${modalProps.isOpen ? '' : 'opacity-0'}`}
-        onClick={modalProps.onClose}
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition ${isOpen ? '' : 'opacity-0'}`}
+        onClick={onClose}
       />
-      <div className={`absolute transition shadow-xl/20 ${modalProps.isOpen ? '' : 'scale-95 opacity-0'} ${className}`}>
+      <div className={`relative transition shadow-xl/20 ${isOpen ? '' : 'scale-95 opacity-0'} ${className}`}>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

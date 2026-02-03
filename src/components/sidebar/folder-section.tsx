@@ -27,7 +27,7 @@ export function FolderSection() {
     handleCreateFolder,
     handleCreateNewMemo,
     deleteFolder,
-    reorderFolder
+    reorderFolder,
   } = useSidebarContext();
 
   const isMobile = useIsMobile();
@@ -455,8 +455,6 @@ export function FolderSection() {
         label: '폴더 수정',
         icon: <Pencil className="w-4 h-4" />,
         action: () => {
-          // 해당 폴더로 이동하여 memo-browser-header의 folder-edit 사용
-          router.replace(`/memo?folderId=${folder.id}`);
           handleFolderEdit(folder);
           handleCloseContextMenu();
         }

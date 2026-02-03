@@ -1,6 +1,7 @@
 import Heading from '@tiptap/extension-heading';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Underline from '@tiptap/extension-underline';
+import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import { TaskList, TaskItem } from '@tiptap/extension-list'
 import { createLowlight } from 'lowlight';
@@ -552,6 +553,11 @@ export const getEditorExtensions = () => [
   StarterKit.configure({
     heading: false, // Disabling mostly to use the custom configuration above
     codeBlock: false, // Disabling to use CodeBlockLowlight
+  }),
+  Link.configure({
+    openOnClick: false,
+    autolink: true,
+    defaultProtocol: 'https',
   }),
   TextAlign.configure({
     types: ['heading', 'paragraph'],
