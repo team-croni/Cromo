@@ -4,6 +4,16 @@ import { logger } from "@/lib/axiom/server"
 import { transformMiddlewareRequest } from "@axiomhq/nextjs"
 
 export default async function middleware(request: NextRequest, event: NextFetchEvent) {
+  // E2E Test Bypass - 보안을 위해 production이 아닐 때와 비밀 키가 일치할 때만 허용
+  const e2eSecret = process.env.E2E_TEST_AUTH_SECRET;
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    e2eSecret &&
+    request.headers.get('x-e2e-test') === e2eSecret
+  ) {
+    return NextResponse.next();
+  }
+
   // 루트 경로('/') 및 법적 고지 페이지들, 문의 페이지, Inngest 웹훅에 대해서는 인증 없이 접근 허용
   const publicPaths = ['/', '/terms', '/privacy', '/cookies', '/contact'];
   if (publicPaths.includes(request.nextUrl.pathname)) {

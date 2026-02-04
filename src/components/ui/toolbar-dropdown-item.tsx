@@ -31,6 +31,7 @@ export const ToolbarDropdownItem: React.FC<ToolbarDropdownItemProps> = ({
   return horizontal ? (
     <div
       onClick={handleClick}
+      title={label}
       className={`
         ${disabled ? 'opacity-100 cursor-default' : 'cursor-pointer'} rounded-lg p-2 flex gap-3 items-center justify-between text-sm text-nowrap
         ${isActive ? 'transition bg-primary text-primary-foreground' : disabled ? '' : 'hover:bg-foreground/5'}
@@ -44,6 +45,7 @@ export const ToolbarDropdownItem: React.FC<ToolbarDropdownItemProps> = ({
   ) : (
     <div
       onClick={handleClick}
+      title={label}
       className={`
         ${disabled ? 'opacity-100 cursor-default' : 'cursor-pointer'} rounded-lg py-1.5 pl-2.5 pr-3 flex gap-3 items-center justify-between text-sm text-nowrap
         ${isActive ? 'transition bg-primary text-primary-foreground' : disabled ? '' : 'hover:bg-foreground/5'}
