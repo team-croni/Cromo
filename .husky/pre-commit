@@ -4,6 +4,6 @@ echo "🔍 Checking pnpm-lock.yaml consistency..."
 
 pnpm install --frozen-lockfile --lockfile-only
 
-echo "🚀 Running lint and tests..."
+echo "🚀 Running lint"
 
-pnpm lint && pnpm test
+pnpm lint

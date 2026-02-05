@@ -63,6 +63,61 @@ const reorderFolderAPI = async (id: string, newOrder: number): Promise<void> => 
   }
 };
 
+// Helper function to recursively add a new folder to the hierarchy
+const addFolderToHierarchy = (folders: Folder[], newFolder: Folder): Folder[] => {
+  if (!newFolder.parentId) {
+    // If no parentId, it's a root folder
+    return [...folders, newFolder];
+  }
+
+  return folders.map((folder) => {
+    if (folder.id === newFolder.parentId) {
+      // Found the parent, add to its children
+      return {
+        ...folder,
+        children: [...folder.children, newFolder],
+      };
+    } else if (folder.children && folder.children.length > 0) {
+      // Recursively search in children
+      return {
+        ...folder,
+        children: addFolderToHierarchy(folder.children, newFolder),
+      };
+    }
+    return folder;
+  });
+};
+
+// Helper function to recursively update a folder in the hierarchy
+const updateFolderInHierarchy = (folders: Folder[], updatedFolder: Folder): Folder[] => {
+  return folders.map((folder) => {
+    if (folder.id === updatedFolder.id) {
+      // Found the folder to update
+      return { ...folder, ...updatedFolder };
+    } else if (folder.children && folder.children.length > 0) {
+      // Recursively search in children
+      return {
+        ...folder,
+        children: updateFolderInHierarchy(folder.children, updatedFolder),
+      };
+    }
+    return folder;
+  });
+};
+
+// Helper function to recursively remove a folder from the hierarchy
+const removeFolderFromHierarchy = (folders: Folder[], folderIdToRemove: string): Folder[] => {
+  return folders.filter((folder) => folder.id !== folderIdToRemove).map((folder) => {
+    if (folder.children && folder.children.length > 0) {
+      return {
+        ...folder,
+        children: removeFolderFromHierarchy(folder.children, folderIdToRemove),
+      };
+    }
+    return folder;
+  });
+};
+
 export function useFolders(): UseFoldersResult {
   const queryClient = useQueryClient();
 
@@ -82,8 +137,10 @@ export function useFolders(): UseFoldersResult {
   const createMutation = useMutation({
     mutationFn: createFolderAPI,
     onSuccess: (newFolder) => {
-      // 새 폴더를 캐시에 추가
-      queryClient.setQueryData<Folder[]>(['folders'], (oldFolders = []) => [...oldFolders, newFolder]);
+      // 새 폴더를 캐시에 추가 (계층 구조 반영)
+      queryClient.setQueryData<Folder[]>(['folders'], (oldFolders = []) =>
+        addFolderToHierarchy(oldFolders, newFolder)
+      );
     },
   });
 
@@ -91,9 +148,9 @@ export function useFolders(): UseFoldersResult {
   const updateMutation = useMutation({
     mutationFn: updateFolderAPI,
     onSuccess: (updatedFolder) => {
-      // 업데이트된 폴더로 캐시를 갱신
+      // 업데이트된 폴더로 캐시를 갱신 (계층 구조 반영)
       queryClient.setQueryData<Folder[]>(['folders'], (oldFolders = []) =>
-        oldFolders.map((folder) => (folder.id === updatedFolder.id ? updatedFolder : folder))
+        updateFolderInHierarchy(oldFolders, updatedFolder)
       );
     },
   });
@@ -102,9 +159,9 @@ export function useFolders(): UseFoldersResult {
   const deleteMutation = useMutation({
     mutationFn: deleteFolderAPI,
     onSuccess: (_, deletedFolderId) => {
-      // 삭제된 폴더를 캐시에서 제거
+      // 삭제된 폴더를 캐시에서 제거 (계층 구조 반영)
       queryClient.setQueryData<Folder[]>(['folders'], (oldFolders = []) =>
-        oldFolders.filter((folder) => folder.id !== deletedFolderId)
+        removeFolderFromHierarchy(oldFolders, deletedFolderId)
       );
     },
   });

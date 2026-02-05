@@ -50,6 +50,7 @@ export type Folder = {
   }[];
   createdAt: string;
   updatedAt: string;
+  userId: string;
 };
 
 // 태그 타입 추가

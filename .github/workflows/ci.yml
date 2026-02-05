@@ -1,24 +1,16 @@
-name: CI Checks
+name: CI
 
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".gitignore"
+    paths-ignore: ["**.md", "docs/**", ".gitignore", ".husky/**"]
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".gitignore"
+    paths-ignore: ["**.md", "docs/**", ".gitignore", ".husky/**"]
 
-permissions:
-  contents: read
+permissions: contents: read
 
 jobs:
-  # 1. 린트 체크
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -33,8 +25,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint --quiet
 
-  # 2. 빌드 무결성 검증 (더미 환경 변수 사용)
-  build-check:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,52 +37,54 @@ jobs:
           node-version: "20"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-
-      # 보안을 위해 키 이름이 노출되지 않는 .env 생성 방식 유지
-      - name: Create .env file from Secrets
-        run: echo "${{ secrets.CI_ENV_FILE }}" > .env
-
-      - name: Build Verification
-        run: pnpm build
-
-  # 3. Playwright E2E 테스트
-  e2e-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.14.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-
       - name: Create .env file
         run: echo "${{ secrets.CI_ENV_FILE }}" > .env
+      - run: pnpm build
 
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:unit
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Create .env file
+        run: echo "${{ secrets.CI_ENV_FILE }}" > .env
       - name: Get Playwright version
         id: playwright-version
         run: echo "version=$(pnpm list @playwright/test --depth=0 | grep @playwright/test | awk '{print $2}')" >> $GITHUB_OUTPUT
-
-      - name: Cache Playwright binaries
+      - name: Cache Playwright
         uses: actions/cache@v4
-        id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright Browsers
+      - name: Install Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
-
-      - name: Run Playwright tests
+      - name: Run E2E tests
         run: pnpm test
         env:
-          E2E_TEST_AUTH_SECRET: ${{ secrets.E2E_TEST_AUTH_SECRET || 'development_secret' }}
-
-      - name: Upload Test Artifacts
+          E2E_TEST_AUTH_SECRET: ${{ secrets.E2E_TEST_AUTH_SECRET || 'dev_secret' }}
+      - name: Upload artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
