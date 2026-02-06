@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev",
     "dev:socket": "node socket-server/app.js",
-    "dev:dummy": "tsx prisma/seed-demo.ts",
     "postinstall": "prisma generate",
     "build": "next build --turbopack",
     "start": "next start",
@@ -21,6 +20,7 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force",
     "db:apply-indexes": "tsx scripts/apply-indexes.ts",
+    "db:dummy": "tsx prisma/seed-demo.ts",
     "db:setup": "rm -rf prisma/migrations && npm run db:reset && npm run db:migrate && npm run db:apply-indexes && npm run db:generate",
     "embedding:memo": "tsx scripts/embedding-batch.ts memo",
     "embedding:tag": "tsx scripts/embedding-batch.ts tag",

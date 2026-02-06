@@ -1,5 +1,5 @@
-import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import { AVATAR_GRADIENT_OPTIONS, DEFAULT_AVATAR_GRADIENT } from "@constants/avatar-gradients"
@@ -20,11 +20,57 @@ export const authOptions = {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
-          image: profile.picture, // 구글 프로필 이미지 저장
+          image: profile.picture,
           avatarColor: randomGradient,
-          avatarType: "gradient", // 기본 타입을 gradient로 설정
+          avatarType: "gradient",
         };
       },
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        // 테스트 계정 정보 (환경 변수에서 가져오거나 기본값 사용)
+        const TEST_EMAIL = process.env.TEST_USER_EMAIL || "test@cromo.site";
+        const TEST_PASSWORD = process.env.TEST_USER_PASSWORD || "cromo1234";
+
+        if (credentials.email === TEST_EMAIL && credentials.password === TEST_PASSWORD) {
+          // 데이터베이스에서 테스트 사용자 확인 또는 생성
+          let user = await prisma.user.findUnique({
+            where: { email: TEST_EMAIL }
+          });
+
+          if (!user) {
+            const randomGradient = AVATAR_GRADIENT_OPTIONS[Math.floor(Math.random() * AVATAR_GRADIENT_OPTIONS.length)].value;
+            user = await prisma.user.create({
+              data: {
+                email: TEST_EMAIL,
+                name: "Test User",
+                avatarColor: randomGradient,
+                avatarType: "gradient",
+              }
+            });
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            avatarColor: user.avatarColor,
+            avatarType: user.avatarType,
+          };
+        }
+
+        return null;
+      }
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,

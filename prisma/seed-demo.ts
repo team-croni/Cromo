@@ -1,3 +1,4 @@
+import { AVATAR_GRADIENT_OPTIONS } from '@constants/avatar-gradients';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -220,64 +221,65 @@ const createRichDummyData = () => {
 };
 
 async function main() {
-  console.log('🎬 데모 데이터 주입 시작 (페르소나: 시니어 프로덕트 디자이너)...');
+  const TEST_EMAIL = process.env.TEST_USER_EMAIL || 'test@cromo.site';
 
-  const existingUsers = await prisma.user.findMany();
-  console.log(`👤 기존 사용자 ${existingUsers.length}명 발견.`);
+  console.log(`🎬 데모 데이터 주입 시작 (대상: ${TEST_EMAIL})...`);
 
-  if (existingUsers.length === 0) {
-    console.log('⚠️ 사용자가 없습니다. 기본 데모 사용자를 생성합니다...');
-    const demoUser = await prisma.user.create({
+  let testUser = await prisma.user.findUnique({
+    where: { email: TEST_EMAIL }
+  });
+
+  if (!testUser) {
+    console.log(`⚠️ 테스트 사용자가 없습니다. ${TEST_EMAIL} 계정을 생성합니다...`);
+    const randomGradient = AVATAR_GRADIENT_OPTIONS[Math.floor(Math.random() * AVATAR_GRADIENT_OPTIONS.length)].value;
+    testUser = await prisma.user.create({
       data: {
-        email: 'demo@cromo.app',
-        name: '김사라',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&backgroundColor=b6e3f4',
+        email: TEST_EMAIL,
+        name: 'Test User',
+        avatarColor: randomGradient,
+        avatarType: 'gradient',
       },
     });
-    existingUsers.push(demoUser);
   }
 
-  for (const user of existingUsers) {
-    console.log(`🧹 ${user.email}의 데이터 정리 중...`);
+  console.log(`🧹 ${testUser.email}의 기존 데이터 정리 중...`);
 
-    await prisma.userSharedMemo.deleteMany({
-      where: { memo: { userId: user.id } }
+  await prisma.userSharedMemo.deleteMany({
+    where: { userId: testUser.id }
+  });
+  await prisma.memo.deleteMany({ where: { userId: testUser.id } });
+  await prisma.folder.deleteMany({ where: { userId: testUser.id } });
+
+  console.log(`🌱 ${testUser.email}에게 데모 데이터 생성 중...`);
+  const templates = createRichDummyData();
+
+  for (const folderTmpl of templates) {
+    const folder = await prisma.folder.create({
+      data: {
+        name: folderTmpl.name,
+        icon: folderTmpl.icon,
+        color: folderTmpl.color,
+        userId: testUser.id,
+        createdAt: folderTmpl.createdAt,
+        updatedAt: folderTmpl.updatedAt,
+      },
     });
-    await prisma.memo.deleteMany({ where: { userId: user.id } });
-    await prisma.folder.deleteMany({ where: { userId: user.id } });
 
-    console.log(`🌱 ${user.email}에게 날짜가 포함된 풍부한 데모 데이터 생성 중...`);
-    const templates = createRichDummyData();
-
-    for (const folderTmpl of templates) {
-      const folder = await prisma.folder.create({
+    for (const memoTmpl of folderTmpl.memos) {
+      await prisma.memo.create({
         data: {
-          name: folderTmpl.name,
-          icon: folderTmpl.icon,
-          color: folderTmpl.color,
-          userId: user.id,
-          createdAt: folderTmpl.createdAt,
-          updatedAt: folderTmpl.updatedAt,
+          title: memoTmpl.title,
+          content: memoTmpl.content,
+          folderId: folder.id,
+          userId: testUser.id,
+          createdAt: memoTmpl.createdAt,
+          updatedAt: memoTmpl.updatedAt,
         },
       });
-
-      for (const memoTmpl of folderTmpl.memos) {
-        await prisma.memo.create({
-          data: {
-            title: memoTmpl.title,
-            content: memoTmpl.content,
-            folderId: folder.id,
-            userId: user.id,
-            createdAt: memoTmpl.createdAt,
-            updatedAt: memoTmpl.updatedAt,
-          },
-        });
-      }
     }
   }
 
-  console.log('\n✨ 날짜가 포함된 데모 데이터 주입 완료! ✨');
-  console.log('👉 정렬 필터를 "수정일 순"으로 설정하여 확인해보세요.');
+  console.log('\n✨ 테스트 계정 데모 데이터 주입 완료! ✨');
 }
 
 main()

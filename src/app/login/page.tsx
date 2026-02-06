@@ -13,6 +13,9 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCredentialsLoading, setIsCredentialsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [lastLoginMethod, setLastLoginMethod] = useState<string | null>(null);
 
@@ -48,6 +51,33 @@ export default function LoginPage() {
     }
   };
 
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCredentialsLoading(true);
+    setError(null);
+
+    try {
+      const callbackUrl = searchParams.get("callbackUrl") || "/memo";
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.error) {
+        setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+        setIsCredentialsLoading(false);
+      } else {
+        localStorage.setItem("lastLoginMethod", "email");
+        router.push(callbackUrl);
+      }
+    } catch (err) {
+      setError("로그인 중 오류가 발생했습니다.");
+      setIsCredentialsLoading(false);
+    }
+  };
+
   if (status === "loading") {
     return null;
   }
@@ -66,18 +96,62 @@ export default function LoginPage() {
             당신의 아이디어를 더 가치있게 만드세요
           </p>
         </div>
-        <div className="">
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-              <p className="text-sm text-red-200">{error}</p>
+        <div>
+          <form onSubmit={handleCredentialsSignIn} className="space-y-4 mb-6">
+            <div className="space-y-2">
+              <input
+                type="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-2xl bg-transparent"
+              />
+              <input
+                type="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-2xl bg-transparent"
+              />
             </div>
-          )}
+            {error && (
+              <div className="mb-6 flex items-center gap-3">
+                <p className="pl-2 text-xs text-destructive slide-up">{error}</p>
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={isCredentialsLoading || isLoading}
+              className="w-full flex items-center justify-center px-4 py-3 border border-primary/50 bg-primary/5 text-foreground font-medium rounded-2xl hover:border-primary/80 hover:bg-primary/10 disabled:opacity-50"
+            >
+              {isCredentialsLoading ? (
+                <div className='flex justify-center items-center w-6 h-6 text-foreground'>
+                  <Ring size="18"
+                    speed="2"
+                    stroke={2}
+                    color="currentColor"
+                    bgOpacity={0.2}
+                  />
+                </div>
+              ) : (
+                "로그인"
+              )}
+            </button>
+          </form>
+
+          <div className="relative mb-6 text-center">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-zinc-800"></div>
+            </div>
+            <span className="relative px-4 bg-background text-zinc-500 text-sm">또는</span>
+          </div>
 
           <div className="space-y-4">
             <button
               onClick={handleGoogleSignIn}
-              disabled={isLoading}
+              disabled={isLoading || isCredentialsLoading}
               className={`
                 relative w-full flex items-center justify-center gap-3 px-4 py-3 
                 bg-white hover:bg-zinc-200 transition
@@ -111,7 +185,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <div className="mt-12 pt-6 border-t text-center">
+          <div className="mt-16 pt-6 border-t text-center">
             <p className="text-xs text-muted-foreground/60 leading-relaxed">
               로그인 시 Cromo의 <Link href="/terms" className="text-muted-foreground hover:underline">이용약관</Link> 및 <Link href="/privacy" className="text-muted-foreground hover:underline">개인정보처리방침</Link>에<br />
               동의하는 것으로 간주됩니다.
