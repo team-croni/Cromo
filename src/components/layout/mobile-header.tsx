@@ -17,7 +17,7 @@ export function MobileHeader() {
     <header className="fixed top-0 left-0 right-0 z-40 w-full bg-background border-b md:pointer-events-none md:opacity-0">
       <div className="flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
-          <Link href="/">
+          <Link href="/memo">
             <div className="flex items-center">
               <LogoSymbolSvg className="h-6.5 w-6.5" />
               <p className="ml-2 text-[1.625rem] font-medium font-baloo tracking-[-0.5px] text-foreground">Cromo</p>

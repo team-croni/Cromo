@@ -60,7 +60,7 @@ export function MemoLayoutClient() {
   if (status === "loading") {
     return (
       <MainLayout>
-        <div className="flex-1 flex h-screen items-center justify-center">
+        <div className="flex-1 flex h-[calc(100vh-4rem)] md:h-screen items-center justify-center">
           <Ring
             size="28"
             speed="2"
@@ -91,7 +91,7 @@ export function MemoLayoutClient() {
             </div>
           </div>
         </div>
-        <div className="flex-1 min-h-125 md:min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
           {isGridView ? (
             <MemoGridView />
           ) : (

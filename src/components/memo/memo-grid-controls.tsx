@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { LayoutGrid, ArrowUpDown, ChevronDown, ArrowUpWideNarrow, ArrowDownWideNarrow, Search, Trash2, Archive, X, SquareCheckBig, Check, Undo2, ArchiveX, ListX } from "lucide-react";
+import { LayoutGrid, ArrowUpDown, ChevronDown, ArrowUpWideNarrow, ArrowDownWideNarrow, Search, Trash2, Archive, X, SquareCheckBig, Check, Undo2, ArchiveX, ListX, ChevronsUpDown } from "lucide-react";
 import { useSearchParams } from 'next/navigation';
 import { useHomeFilterStore } from "@/store/homeFilterStore";
 import { useHybridSearch } from "@/hooks/useHybridSearch";
@@ -7,7 +7,7 @@ import { useMemoStore } from "@/store/memoStore";
 import { SortDropdown } from "./sort-dropdown";
 import { useMemos } from "@/hooks/useMemos";
 import { useMemoBrowserStore } from "@/store/memoBrowserStore";
-import { useMemoHandlers } from "@/hooks/useMemoHandlers";
+import { useIsMobile } from "@hooks/useMediaQuery";
 
 export function MemoGridControls() {
   const { filterOptions, updateFilterOptions } = useHomeFilterStore();
@@ -34,6 +34,8 @@ export function MemoGridControls() {
   } = useMemos();
 
   const { activeMode, toggleSelectionMode, selectedMemos, setSelectedMemos } = useMemoBrowserStore();
+
+  const isMobile = useIsMobile();
 
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'recent';
@@ -184,7 +186,7 @@ export function MemoGridControls() {
   const isSelectionMode = activeMode === 'selection';
 
   return (
-    <div className="sticky top-0 flex flex-col gap-4 pb-2 pt-5 mb-2 bg-background/75 z-20 backdrop-blur-2xl">
+    <div className="md:sticky top-0 flex flex-col gap-4 pb-2 pt-5 mb-2 md:bg-background/75 z-20 md:backdrop-blur-2xl">
       <div className="flex items-center justify-between max-w-4xl w-full mx-auto px-4 md:px-8 lg:px-8">
 
         {/* Left Side */}
@@ -199,12 +201,14 @@ export function MemoGridControls() {
           ) : (
             searchTerm ? (
               <div className="flex items-center gap-2.5">
-                <Search className="w-5 h-5 text-muted-foreground/70" />
-                <h2 className="flex text-base text-foreground whitespace-nowrap">
-                  <span className="font-semibold">
-                    &apos;{searchTerm.length > 20 ? searchTerm.substring(0, 20) + '...' : searchTerm}&apos;
-                  </span>에 대한 검색 결과
-                </h2>
+                <Search className="w-5 h-5 text-muted-foreground opacity-70" />
+                {isMobile ? <h2 className="flex text-base text-foreground whitespace-nowrap">검색 결과</h2> :
+                  <h2 className="flex text-base text-foreground whitespace-nowrap">
+                    <span className="font-semibold">
+                      &apos;{searchTerm.length > 20 ? searchTerm.substring(0, 20) + '...' : searchTerm}&apos;
+                    </span>에 대한 검색 결과
+                  </h2>
+                }
                 {(hybridSearchResults.length > 0 && !isLoading) && (
                   <span className="text-muted-foreground font-normal whitespace-nowrap">
                     {hybridSearchResults.length}개
@@ -214,7 +218,7 @@ export function MemoGridControls() {
             ) : (
               <div className="flex items-center gap-2.5">
                 <LayoutGrid className="w-5 h-5 text-muted-foreground/70" />
-                <h2 className="text-base font-medium text-foreground">모든 메모</h2>
+                <h2 className="text-base font-medium text-foreground">{isMobile ? '메모' : '모든 메모'}</h2>
                 {(memos.length > 0 && !recentMemosLoading) && (
                   <span className="text-muted-foreground font-normal">
                     {memos.length}개
@@ -357,12 +361,12 @@ export function MemoGridControls() {
                 {filterOptions.sortDirection === 'desc' ? (
                   <>
                     <ArrowDownWideNarrow className="h-4 w-4" />
-                    <span className="whitespace-nowrap">내림차순</span>
+                    {isMobile ? <ChevronsUpDown className="h-3.5 w-3.5" strokeWidth={1.5} /> : <span className="whitespace-nowrap">내림차순</span>}
                   </>
                 ) : (
                   <>
                     <ArrowUpWideNarrow className="h-4 w-4" />
-                    <span className="whitespace-nowrap">오름차순</span>
+                    {isMobile ? <ChevronsUpDown className="h-3.5 w-3.5" strokeWidth={1.5} /> : <span className="whitespace-nowrap">오름차순</span>}
                   </>
                 )}
               </button>

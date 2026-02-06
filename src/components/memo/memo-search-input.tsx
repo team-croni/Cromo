@@ -9,12 +9,14 @@ import { AutocompleteDropdown } from "./autocomplete-dropdown";
 import { getSearchHistory, addToSearchHistory } from "@/utils/searchHistoryUtils";
 import { useAutocompleteStore } from "@/store/autocompleteStore";
 import { useSearchParams } from 'next/navigation';
+import { useIsMobile } from "@hooks/useMediaQuery";
 
 export function MemoSearchInput() {
   const searchParams = useSearchParams();
   const { searchTerm } = useMemoStore();
   const { dateFilter, setDateFilter } = useHybridSearchStore();
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
   // URL의 search 파라미터를 가져옴
   const urlSearchTerm = searchParams.get('search') || '';
@@ -81,13 +83,13 @@ export function MemoSearchInput() {
   }, [hybridSearchResults, previousSearchTerm, recentSuccessfulSearch]);
 
   return (
-    <div className="absolute bottom-10 w-[calc(100%-1.125rem)] flex px-4 justify-center z-30 slide-up">
+    <div className="absolute bottom-5 md:bottom-10 w-full md:w-[calc(100%-1.125rem)] flex px-4 justify-center z-30 slide-up">
       <div ref={containerRef} className="relative w-full max-w-216 group">
         <AutocompleteDropdown />
         <input
           ref={inputRef}
           type="text"
-          placeholder="찾고 싶은 메모에 대해서 입력하세요..."
+          placeholder={isMobile ? "메모를 검색하세요..." : "찾고 싶은 메모에 대해서 입력하세요..."}
           value={localSearchTerm}
           onChange={(e) => {
             setSelectedIndex(-1);

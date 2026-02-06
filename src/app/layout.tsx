@@ -56,7 +56,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitializerScript }} />
       </head>
       <body
-        className={`${pretendard.variable} ${baloo.variable} flex h-screen`}
+        className={`${pretendard.variable} ${baloo.variable} flex h-svh`}
       >
         <AuthProvider>
           <ThemeProvider

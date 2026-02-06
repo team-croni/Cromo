@@ -40,7 +40,7 @@ export function MemoGridView() {
 
   if (allMemosLoading || sharedMemosLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex-1 flex h-full items-center justify-center bg-background">
         <Ring
           size="28"
           speed="2"
