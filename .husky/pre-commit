@@ -7,3 +7,7 @@ pnpm install --frozen-lockfile --lockfile-only
 echo "🚀 Running lint"
 
 pnpm lint
+
+echo "🔍 Checking GitHub Actions workflows..."
+
+pnpm lint:workflow
