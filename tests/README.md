@@ -19,10 +19,11 @@ pnpm test          # 모든 테스트
 
 ### 환경 변수
 
-E2E 테스트를 실행하기 전에 `.env` 파일에 다음 환경 변수를 설정해야 합니다:
+UI 로그인 E2E 테스트를 실행하려면 `.env` 파일에 다음 환경 변수를 설정해야 합니다:
 
 ```env
-E2E_TEST_AUTH_SECRET=your-test-secret
+TEST_USER_EMAIL="test email"
+TEST_USER_PASSWORD="test password"
 ```
 
 ## CI/CD

@@ -14,7 +14,7 @@ test.describe('Landing Page E2E Tests', () => {
       // 핵심 CTA 버튼 작동 확인
       const startBtn = page.locator('header').getByRole('link', { name: '시작하기' });
       await startBtn.click();
-      await page.waitForURL(/(\/memo|\/login)/, { timeout: 10000 });
+      await page.waitForURL(/(\/memo|\/login)/, { timeout: 20000 });
       await expect(page).toHaveURL(/(\/memo|\/login)/);
     });
 

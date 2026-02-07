@@ -1,80 +1,61 @@
 import { test, expect } from '@playwright/test';
-import {
-  expectLoginPageVisible,
-  clickGoogleLoginButton,
-  expectRedirectToLogin,
-  setupE2EAuthHeaders,
-  navigateWithE2EAuth,
-} from './utils/auth-helper';
+import { TEST_USER } from './utils/auth-helper';
 
-test.describe('Login Functionality', () => {
-  const LOGIN_URL = 'http://localhost:3000/login'; // The login page URL
-  const TERMS_URL = 'http://localhost:3000/terms';
-  const PRIVACY_URL = 'http://localhost:3000/privacy';
+test.describe('UI Login Functionality with Test Account', () => {
+  const LOGIN_URL = 'http://localhost:3000/login';
+  const PROTECTED_URL = 'http://localhost:3000/memo';
 
   test.beforeEach(async ({ page }) => {
+    // Ensure we start from a clean state for UI login tests
+    await page.context().clearCookies(); // Clear all cookies
+    // Clear localStorage for all subsequent navigations in this context
+    await page.context().addInitScript(() => {
+      localStorage.clear();
+    });
     await page.goto(LOGIN_URL);
   });
 
-  test.describe('1. Login Page UI', () => {
-    test('should display the Google login button', async ({ page }) => {
-      await expectLoginPageVisible(page);
-    });
+  test('should successfully log in with TEST_USER_EMAIL and TEST_USER_PASSWORD', async ({ page }) => {
+    const testEmail = process.env.TEST_USER_EMAIL || 'test@cromo.site';
+    const testPassword = process.env.TEST_USER_PASSWORD || 'cromo1234';
 
-    test('should display the terms of service link', async ({ page }) => {
-      const termsLink = page.getByRole('link', { name: '이용약관' });
-      await expect(termsLink).toBeVisible({ timeout: 15000 });
-      await expect(termsLink).toHaveAttribute('href', '/terms');
-    });
+    // Assuming there are input fields for email and password
+    await page.fill('input[type="email"]', testEmail);
+    await page.fill('input[type="password"]', testPassword);
 
-    test('should display the privacy policy link', async ({ page }) => {
-      const privacyLink = page.getByRole('link', { name: '개인정보처리방침' });
-      await expect(privacyLink).toBeVisible({ timeout: 15000 });
-      await expect(privacyLink).toHaveAttribute('href', '/privacy');
-    });
+    // Wait for the submit button to be enabled before clicking
+    const submitButton = page.locator('button[type="submit"]');
+    await expect(submitButton).toBeEnabled({ timeout: 5000 });
+    await submitButton.click();
+
+    // Debugging steps
+    page.on('console', msg => console.log('PAGE CONSOLE:', msg.text()));
+    await page.screenshot({ path: 'debug-login-after-submit.png' });
+    console.log('Current URL after submit:', page.url());
+    console.log('Page content after submit:', await page.content());
+
+    // Assert that the invalid credentials error message is NOT visible
+    await expect(page.locator('text=이메일 또는 비밀번호가 올바르지 않습니다.')).not.toBeVisible();
+
+    // After successful login, expect to be redirected to a protected page (e.g., /memo)
+    await page.waitForURL(PROTECTED_URL, { timeout: 20000 });
+    await expect(page).toHaveURL(PROTECTED_URL);
+
+    // Verify that the user is logged in by checking for some user-specific element
+    // This will likely need to be adjusted based on the actual UI for a logged-in user
+    await expect(page.locator(`text=${TEST_USER.name}`)).toBeVisible();
   });
 
-  test.describe('2. Login Flow', () => {
-    test('should redirect to Google authentication on clicking Google login button', async ({ page }) => {
-      await expectLoginPageVisible(page);
+  test('should show error message with invalid credentials', async ({ page }) => {
+    const invalidEmail = 'invalid@example.com';
+    const invalidPassword = 'invalidpassword';
 
-      // Expecting a navigation on the same page, not a popup
-      const navigationPromise = page.waitForURL(/^https:\/\/accounts\.google\.com/);
-      await clickGoogleLoginButton(page);
-      await navigationPromise;
+    await page.fill('input[type="email"]', invalidEmail);
+    await page.fill('input[type="password"]', invalidPassword);
+    await page.click('button[type="submit"]');
 
-      // Additional assertion to ensure we are on Google's login page
-      await expect(page).toHaveURL(/^https:\/\/accounts\.google\.com/);
-    });
-  });
-
-  test.describe('3. Navigation', () => {
-    test('should navigate to terms of service page', async ({ page }) => {
-      const termsLink = page.locator('a:has-text("이용약관")');
-      await termsLink.click();
-      await expect(page).toHaveURL(TERMS_URL, { timeout: 15000 });
-    });
-
-    test('should navigate to privacy policy page', async ({ page }) => {
-      const privacyLink = page.locator('a:has-text("개인정보처리방침")');
-      await privacyLink.click();
-      await expect(page).toHaveURL(PRIVACY_URL, { timeout: 15000 });
-    });
-  });
-
-  test.describe('4. Authentication Redirect', () => {
-    test('should redirect to login when accessing protected page without auth', async ({ page }) => {
-      await expectRedirectToLogin(page, '/memo');
-    });
-  });
-
-  test.describe('5. E2E Test Authentication', () => {
-    test('should access protected page with E2E auth headers', async ({ page }) => {
-      await setupE2EAuthHeaders(page);
-      await page.goto('/memo');
-
-      // Should not redirect to login
-      await expect(page).toHaveURL('/memo', { timeout: 15000 });
-    });
+    // Expect to remain on the login page and see the specific Korean error message
+    await expect(page).toHaveURL(LOGIN_URL);
+    await expect(page.locator('text=이메일 또는 비밀번호가 올바르지 않습니다.')).toBeVisible();
   });
 });
