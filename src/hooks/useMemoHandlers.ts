@@ -5,12 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Memo } from '@/types';
 import { useMemo } from '@/hooks/useMemo';
 import { useEditorStore } from '@store/editorStore';
+import { useIsMobile } from '@hooks/useMediaQuery';
 
 export const useMemoHandlers = () => {
   const { memos } = useMemoStore();
   const { setIsEditorReady } = useEditorStore();
   const { data: memoData } = useMemo();
   const { folders, toggleFolder, expandFolder } = useFolderStore();
+  const isMobile = useIsMobile();
+
   const {
     refreshMemos,
     archiveMemo: apiArchiveMemo,
@@ -31,6 +34,9 @@ export const useMemoHandlers = () => {
     // 현재 URL의 파라미터를 유지하면서 새로운 URL로 이동
     const params = new URLSearchParams(window.location.search);
     params.set('id', memo.id);
+    if (isMobile) {
+      params.delete('tab');
+    }
     router.push(`/memo?${params.toString()}`);
 
     // 메모의 상위 폴더들을 모두 확장

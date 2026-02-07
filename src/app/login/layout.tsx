@@ -4,7 +4,7 @@ import LogoSymbolSvg from "@svgs/logo/logo-dark.svg"
 export default function LoginLayout({ children }: { children?: React.ReactNode }) {
   return (
     <main className="flex-1">
-      <header className="fixed top-0 z-50 w-full">
+      <header className="fixed top-0 z-50 w-full opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto">
         <div className="flex items-center px-6 py-4 mx-auto">
           <Link href="/">
             <div className="flex items-center">

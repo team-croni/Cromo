@@ -69,7 +69,7 @@ export function Sidebar() {
       {/* 모바일 오버레이 */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          className="md:hidden fixed inset-0 bg-black/50 z-35"
           onClick={() => setIsOpen(false)}
         />
       )}

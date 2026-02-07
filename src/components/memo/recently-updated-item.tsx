@@ -13,7 +13,6 @@ import classNames from 'classnames';
 import { useMemo } from '@hooks/useMemo';
 import { Ring } from 'ldrs/react';
 import { useSession } from 'next-auth/react';
-import { useMemos } from '@hooks/useMemos';
 import { ContextMenu, ContextMenuOption } from '@components/ui/context-menu';
 
 interface MemoTagsProps {
@@ -25,7 +24,7 @@ interface MemoTagsProps {
 const MemoTags = ({ memo, initTabParams, initFolderId }: MemoTagsProps) => {
   // 태그 컨테이너 ref
   const tagContainerRef = useRef<HTMLDivElement>(null);
-  const [visibleTagCount, setVisibleTagCount] = useState(3); // 기본값 3개
+  const [visibleTagCount, setVisibleTagCount] = useState(3);
 
   // 태그 수를 동적으로 계산하는 효과
   useEffect(() => {
@@ -233,7 +232,6 @@ export const RecentlyUpdatedItem = memo(({
     handlePermanentlyDeleteMemo,
     handleRemoveFromSharedList
   } = useMemoHandlers();
-  const { removeFromSharedList } = useMemos();
   const { processingMemos } = useMemoStore();
   const { data: memoData } = useMemo();
   const { activeMode, selectedMemos, toggleMemoSelection, toggleSelectionMode, isMultiDragging, setIsMultiDragging } = useMemoBrowserStore();
@@ -449,8 +447,6 @@ export const RecentlyUpdatedItem = memo(({
       }
     }
   };
-
-
 
   // 컨텍스트 메뉴 옵션 설정
   let contextMenuOptions: ContextMenuOption[] = [];
