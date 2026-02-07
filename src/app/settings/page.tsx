@@ -405,7 +405,7 @@ export default function SettingsPage() {
           {/* Account Actions Section */}
           <section className="flex flex-col space-y-2 opacity-0 slide-up" style={{ animationDelay: "300ms", animationFillMode: 'forwards' }}>
             <button
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: '/login' })}
               className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-1 py-2 w-full text-left"
             >
               <LogOut className="w-4 h-4 mr-2" />

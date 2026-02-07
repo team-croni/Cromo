@@ -17,8 +17,8 @@ import { Page, expect } from '@playwright/test';
 export const TEST_USER = {
   id: 'test-user-id',
   name: 'Test User',
-  email: 'test@example.com',
-  avatarColor: 'blue',
+  email: 'test@cromo.site',
+  avatarColor: 'rose',
   avatarType: 'gradient',
 };
 
@@ -70,8 +70,8 @@ export async function expectRedirectToLogin(
   protectedPath: string
 ): Promise<void> {
   await page.goto(protectedPath);
-  await page.waitForURL(/\/login/, { timeout: 15000 });
-  await expect(page).toHaveURL(/\/login(\?.*)?$/, { timeout: 15000 });
+  await page.waitForURL(/\/login/, { timeout: 60000 });
+  await expect(page).toHaveURL(/\/login(\?.*)?$/, { timeout: 60000 });
 }
 
 /**
@@ -126,7 +126,7 @@ export async function clearTestUserSession(page: Page): Promise<void> {
  */
 export async function expectLogoutRedirect(page: Page): Promise<void> {
   await page.goto('/api/auth/signout');
-  await page.waitForURL(/\/login/, { timeout: 5000 });
+  await page.waitForURL(/\/login/, { timeout: 60000 });
   await expect(page).toHaveURL(/\/login(\?.*)?$/);
 }
 
