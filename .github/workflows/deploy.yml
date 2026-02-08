@@ -1,6 +1,7 @@
 name: Deploy to Production
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["CI Checks"]
     types:
@@ -18,20 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.14.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel@latest
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
+      # npx를 사용하여 별도의 전역 설치 없이 최신 버전의 Vercel CLI 실행
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -42,13 +45,14 @@ jobs:
           DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
 
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        # --yes 플래그를 추가하여 업로드 후 멈춤 현상(대기 상태) 방지
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -59,6 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # workflow_run 이벤트에서 정확한 커밋을 참조하기 위해 설정
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 2
 
