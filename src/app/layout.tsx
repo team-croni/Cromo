@@ -7,6 +7,8 @@ import AuthProvider from "@components/providers/auth-provider";
 import { SocketProvider } from "@contexts/SocketContext";
 import { Suspense } from "react";
 import { baloo, pretendard } from "@public/fonts";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 
 export const viewport = {
@@ -74,6 +76,8 @@ export default function RootLayout({
             </Suspense>
           </ThemeProvider>
         </AuthProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
