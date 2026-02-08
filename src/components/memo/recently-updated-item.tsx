@@ -593,6 +593,7 @@ export const RecentlyUpdatedItem = memo(({
 
   return (
     <div
+      data-testid="memo-item"
       className={classNames(
         'group flex flex-col relative h-38 select-none border-b border-muted-foreground/20 group-last:border-b-0',
         {
@@ -669,6 +670,7 @@ export const RecentlyUpdatedItem = memo(({
         <MemoTags memo={memo} initTabParams={initTabParams} initFolderId={initFolderId} />
       </div>
       <ContextMenu
+        dataTestid={`context-menu-${memo.id}`}
         isOpen={showContextMenu}
         x={contextMenuPosition.x}
         y={contextMenuPosition.y}

@@ -17,9 +17,10 @@ interface ContextMenuProps {
   y: number;
   options: ContextMenuOption[];
   onClose: () => void;
+  dataTestid?: string;
 }
 
-export function ContextMenu({ isOpen, x, y, options, onClose }: ContextMenuProps) {
+export function ContextMenu({ isOpen, x, y, options, onClose, dataTestid }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -50,10 +51,12 @@ export function ContextMenu({ isOpen, x, y, options, onClose }: ContextMenuProps
   }, [onClose]);
 
   const menuElement = (
-    <div className={`fixed inset-0 flex items-center justify-center z-100 transition-opacity ${isOpen ? '' : 'opacity-0 pointer-events-none'}`}>
+    <div
+      data-testid={dataTestid}
+      className={`fixed inset-0 flex items-center justify-center z-100 transition-opacity ${isOpen ? '' : 'opacity-0 pointer-events-none'}`}>
       <div
         ref={menuRef}
-        className={`fixed z-100 min-w-[180px] bg-background text-foreground rounded-2xl shadow-xl/20 border px-2 py-2.5 space-y-1 transition-transform ${isOpen ? '' : 'opacity-0 pointer-events-none translate-y-[10px]'}`}
+        className={`fixed z-100 min-w-45 bg-background text-foreground rounded-2xl shadow-xl/20 border px-2 py-2.5 space-y-1 transition-transform ${isOpen ? '' : 'opacity-0 pointer-events-none translate-y-2.5'}`}
         style={{
           left: `${x}px`,
           top: `${y}px`,
