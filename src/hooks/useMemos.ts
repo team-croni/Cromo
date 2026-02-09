@@ -217,8 +217,8 @@ export function useMemos(): UseMemosResult {
       removeProcessingMemo(deletedMemo.id);
       removeMemoFromCache(deletedMemo.id);
       // 휴지통 목록 갱신
-      refreshDeletedMemos();
-
+      queryClient.setQueryData<Memo[]>(['memos', 'deleted'], (oldMemos = []) => [...oldMemos, deletedMemo]);
+      queryClient.invalidateQueries({ queryKey: ['memo-counts'] });
       // 검색 결과에서도 메모 제거
       useHybridSearchStore.getState().removeMemoFromSearchResults(deletedMemo.id);
     },
@@ -366,15 +366,26 @@ export function useMemos(): UseMemosResult {
       // 처리 중인 메모 추가
       variables.forEach(id => addProcessingMemo(id));
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_, ids) => {
+      // 삭제된 메모들을 'all' 쿼리에서 미리 찾아둔다.
+      const memosToMove = queryClient.getQueryData<Memo[]>(['memos', 'all'])?.filter(memo => ids.includes(memo.id)) || [];
+
       // 캐시에서 일괄 제거
-      variables.forEach(id => removeMemoFromCache(id));
-      refreshDeletedMemos();
+      ids.forEach(id => removeMemoFromCache(id));
+
+      // 휴지통 목록에 추가
+      queryClient.setQueryData<Memo[]>(['memos', 'deleted'], (oldMemos = []) => {
+        // 이미 휴지통에 있는 메모는 제외하고 추가
+        const filteredNewMemos = memosToMove.filter(newMemo => !oldMemos.some(oldMemo => oldMemo.id === newMemo.id));
+        return [...oldMemos, ...filteredNewMemos.map(memo => ({ ...memo, isDeleted: true }))];
+      });
+
       // 처리 완료 후 메모 제거
-      variables.forEach(id => removeProcessingMemo(id));
+      ids.forEach(id => removeProcessingMemo(id));
+      queryClient.invalidateQueries({ queryKey: ['memo-counts'] });
 
       // 검색 결과에서도 메모 제거
-      variables.forEach(id => {
+      ids.forEach(id => {
         useHybridSearchStore.getState().removeMemoFromSearchResults(id);
       });
     },
@@ -390,16 +401,22 @@ export function useMemos(): UseMemosResult {
       // 처리 중인 메모 추가
       variables.forEach(id => addProcessingMemo(id));
     },
-    onSuccess: (_, variables) => {
-      // 복원된 메모리 처리는 복잡하므로 갱신
-      refreshMemos();
-      refreshArchivedMemos();
-      // 휴지통에서 제거
+    onSuccess: (_, ids) => {
+      // 복원된 메모들을 'deleted' 쿼리에서 찾아둔다.
+      const restoredMemos = queryClient.getQueryData<Memo[]>(['memos', 'deleted'])?.filter(memo => ids.includes(memo.id)) || [];
+
+      // 'all' 쿼리에 복원된 메모들을 추가 (isDeleted: false로 변경)
+      queryClient.setQueryData<Memo[]>(['memos', 'all'], (oldMemos = []) => {
+        const newMemos = restoredMemos.map(memo => ({ ...memo, isDeleted: false }));
+        return [...oldMemos, ...newMemos.filter(newMemo => !oldMemos.some(oldMemo => oldMemo.id === newMemo.id))];
+      });
+
+      // 휴지통 목록에서 제거
       queryClient.setQueryData<Memo[]>(['memos', 'deleted'], (oldMemos = []) =>
-        oldMemos.filter((memo) => !variables.includes(memo.id))
+        oldMemos.filter((memo) => !ids.includes(memo.id))
       );
       // 처리 완료 후 메모 제거
-      variables.forEach(id => removeProcessingMemo(id));
+      ids.forEach(id => removeProcessingMemo(id));
       queryClient.invalidateQueries({ queryKey: ['memo-counts'] });
     },
     onError: (error, variables) => {

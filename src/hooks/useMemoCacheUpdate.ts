@@ -81,8 +81,8 @@ export const useMemoCacheUpdate = () => {
     // But if we want to be thorough:
     queryClient.invalidateQueries({ queryKey: ['memos', 'folder'] });
     queryClient.invalidateQueries({ queryKey: ['memos', 'search'] });
-    queryClient.invalidateQueries({ queryKey: ['memo-counts'] });
   };
+
 
   /**
    * Remove a memo from shared list cache
