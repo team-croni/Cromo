@@ -117,9 +117,9 @@ export const ToolbarDropdown: React.FC<ToolbarDropdownProps> = ({
         ) : (
           triggerIcon
         )}
-        {titleShow && <span className={`ml-2 text-xs text-${textColor}`}>{title}</span>}
-        <div className='flex justify-center items-center w-3 h-3 ml-1 -mr-0.5'>
-          <ChevronDown size={12} className={`transition-transform duration-75 ${isOpen ? 'text-foreground' : isActive ? 'text-foreground rotate-180' : 'text-muted-foreground rotate-180'}`} />
+        {titleShow && <span className={`ml-2 text-xs hidden md:inline text-${textColor}`}>{title}</span>}
+        <div className='flex justify-center items-center w-2.5 h-2.5 ml-1 -mr-0.5'>
+          <ChevronDown size={10} className={`transition-transform duration-75 ${isOpen ? 'text-foreground' : isActive ? 'text-foreground rotate-180' : 'text-muted-foreground rotate-180'}`} />
         </div>
       </ToolbarButton>
 
