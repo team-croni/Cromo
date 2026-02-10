@@ -12,7 +12,7 @@
     "start:socket": "NODE_ENV=production node socket-server/app.js",
     "lint": "eslint",
     "lint:workflow": "node-actionlint .github/workflows/*.yml",
-    "test:e2e": "playwright test tests/",
+    "test:e2e": "playwright test tests/ --workers=1",
     "test:unit": "vitest run",
     "test": "npm run test:e2e && npm run test:unit",
     "db:generate": "prisma generate",
