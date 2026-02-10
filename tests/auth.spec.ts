@@ -13,23 +13,33 @@ test.describe('UI Authentication (Login/Logout) Functionality with Test Account'
       localStorage.clear();
     });
     await page.goto(LOGIN_PATH);
+
+    // Wait for the login form to be visible (not in loading state)
+    // NextAuth session loading can cause initial null render
+    await expect(page.locator('form')).toBeVisible();
   });
 
   test('should successfully log in with TEST_USER_EMAIL and TEST_USER_PASSWORD', async ({ page }) => {
     const testEmail = process.env.TEST_USER_EMAIL || 'test@cromo.site';
     const testPassword = process.env.TEST_USER_PASSWORD || 'cromo1234';
 
-    // Assuming there are input fields for email and password
-    await page.fill('input[type="email"]', testEmail);
-    await page.fill('input[type="password"]', testPassword);
+    // Wait for email input to be visible and enabled
+    const emailInput = page.locator('input[type="email"]');
+    await expect(emailInput).toBeVisible();
+    await emailInput.fill(testEmail);
+
+    // Wait for password input to be visible
+    const passwordInput = page.locator('input[type="password"]');
+    await expect(passwordInput).toBeVisible();
+    await passwordInput.fill(testPassword);
 
     // Wait for the submit button to be enabled before clicking
     const submitButton = page.locator('button[type="submit"]');
-    await expect(submitButton).toBeEnabled({ timeout: 60000 });
+    await expect(submitButton).toBeEnabled();
     await submitButton.click();
 
     // After successful login, expect to be redirected to a protected page (e.g., /memo)
-    await page.waitForURL(new RegExp(PROTECTED_PATH), { timeout: 60000 });
+    await page.waitForURL(new RegExp(PROTECTED_PATH));
     await expect(page).toHaveURL(new RegExp(PROTECTED_PATH));
 
     // Verify that the user is logged in by checking for some user-specific element
@@ -41,13 +51,17 @@ test.describe('UI Authentication (Login/Logout) Functionality with Test Account'
     const invalidEmail = 'invalid@example.com';
     const invalidPassword = 'invalidpassword';
 
+    // Wait for inputs to be visible
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('input[type="password"]')).toBeVisible();
+
     await page.fill('input[type="email"]', invalidEmail);
     await page.fill('input[type="password"]', invalidPassword);
     await page.click('button[type="submit"]');
 
     // Wait for the error message to be visible
     const errorMessageLocator = page.locator('text=이메일 또는 비밀번호가 올바르지 않습니다.');
-    await errorMessageLocator.waitFor({ state: 'visible', timeout: 60000 });
+    await errorMessageLocator.waitFor({ state: 'visible' });
 
     // Expect to remain on the login page and see the specific Korean error message
     await expect(page).toHaveURL(new RegExp(LOGIN_PATH));
@@ -60,27 +74,30 @@ test.describe('UI Authentication (Login/Logout) Functionality with Test Account'
     const testPassword = process.env.TEST_USER_PASSWORD || 'cromo1234';
 
     await page.goto(LOGIN_PATH);
+
+    // Wait for form to be visible
+    await expect(page.locator('input[type="email"]')).toBeVisible();
     await page.fill('input[type="email"]', testEmail);
     await page.fill('input[type="password"]', testPassword);
     const submitButton = page.locator('button[type="submit"]');
-    await expect(submitButton).toBeEnabled({ timeout: 60000 });
+    await expect(submitButton).toBeEnabled();
     await submitButton.click();
-    await page.waitForURL(new RegExp(PROTECTED_PATH), { timeout: 60000 });
+    await page.waitForURL(new RegExp(PROTECTED_PATH));
     await expect(page).toHaveURL(new RegExp(PROTECTED_PATH));
 
     // Navigate to settings page and click logout
-    await page.goto('/settings', { timeout: 60000 });
+    await page.goto('/settings');
     const logoutButton = page.locator('button:has-text("로그아웃")');
     await expect(logoutButton).toBeVisible();
     await logoutButton.click();
 
     // Verify redirection to login page after logout
-    await page.waitForURL(new RegExp(LOGIN_PATH), { timeout: 60000 });
+    await page.waitForURL(new RegExp(LOGIN_PATH));
     await expect(page).toHaveURL(new RegExp(LOGIN_PATH));
 
     // Optionally, try to access a protected page to confirm logged out state
-    await page.goto(PROTECTED_PATH, { timeout: 60000 });
-    await page.waitForURL(new RegExp(LOGIN_PATH), { timeout: 60000 });
+    await page.goto(PROTECTED_PATH);
+    await page.waitForURL(new RegExp(LOGIN_PATH));
     await expect(page).toHaveURL(new RegExp(LOGIN_PATH));
   });
 });

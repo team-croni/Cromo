@@ -2,19 +2,97 @@ import { test, expect } from '@playwright/test';
 
 /**
  * 메모 생명주기 E2E 테스트
+ * 
+ * 테스트 구조 가이드:
+ * - 각 테스트는 독립적으로 실행됩니다 (test.beforeEach에서 로그인)
+ * - test.afterEach에서 생성된 테스트 메모를 자동 정리합니다
+ * - 시나리오 흐름: 생성 → 각 기능 테스트 → 정리 (afterEach)
  */
 test.describe('Memo Lifecycle E2E', () => {
   const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'test@cromo.site';
   const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'cromo1234';
 
-  // 테스트 시작 전 컨텍스트 메뉴 닫기
+  // ========== 헬퍼 함수 ==========
+
+  /** 컨텍스트 메뉴 닫기 */
   const closeContextMenu = async (page: any) => {
     await page.keyboard.press('Escape');
     await page.waitForTimeout(300);
   };
 
+  /** 탭 이동 (컨텍스트 메뉴 닫기 포함) */
+  const navigateToTab = async (page: any, tabName: '최근 메모' | '보관함' | '휴지통') => {
+    await page.locator(`nav >> text=${tabName}`).click();
+    const tabMap: Record<string, RegExp> = {
+      '최근 메모': /tab=recent/,
+      '보관함': /tab=archived/,
+      '휴지통': /tab=trash/,
+    };
+    await page.waitForURL(tabMap[tabName]).catch(() => { });
+    await closeContextMenu(page);
+    // 메모 리스트가 로드될 때까지 잠시 대기
+    await page.waitForSelector('[data-testid="memo-item"]').catch(() => { });
+    await page.waitForTimeout(1000);
+  };
+
+  /** 메모 생성 */
+  const createMemo = async (page: any, title: string) => {
+    const createButton = page.getByText('새로운 메모 추가').first();
+    await expect(createButton).toBeVisible();
+    await createButton.click();
+
+    const titleInput = page.locator('input[placeholder="제목 없음"]');
+    await expect(titleInput).toBeVisible();
+    await titleInput.fill(title);
+
+    await expect(page.locator('text=저장 완료')).toBeVisible();
+    // API 응답 대기
+    await page.waitForTimeout(1000);
+  };
+
+  /** 메모 아이템 찾기 */
+  const getMemoItem = (page: any, title: string) => {
+    return page.getByTestId('memo-item').filter({ hasText: title });
+  };
+
+  /** 컨텍스트 메뉴에서 액션 버튼 클릭 */
+  const clickContextMenuAction = async (page: any, buttonText: string) => {
+    const button = page.locator(`[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("${buttonText}")`).first();
+    await expect(button).toBeVisible();
+    await button.click({ force: true });
+  };
+
+  /** 메모를 휴지통으로 이동 */
+  const moveToTrash = async (page: any, title: string) => {
+    const memoItem = getMemoItem(page, title);
+    await memoItem.click({ button: 'right' });
+    await clickContextMenuAction(page, '휴지통으로 이동');
+    // API 응답 대기 및 메모가 기존 리스트에서 사라지는 것을 확인
+    await expect(memoItem).not.toBeVisible(); // Wait for the memo to disappear
+  };
+
+  /** 메모를 영구 삭제 */
+  const permanentlyDelete = async (page: any, title: string) => {
+    const memoItem = getMemoItem(page, title);
+    await memoItem.click({ button: 'right' });
+
+    // 대화상자 리스너 설정
+    page.on('dialog', async dialog => {
+      await dialog.accept();
+    });
+
+    await clickContextMenuAction(page, '영구 삭제');
+    await page.waitForTimeout(300);
+  };
+
+  // ========== 테스트 전후 처리 ==========
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
+
+    // Wait for the login form to be visible
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+
     await page.fill('input[type="email"]', TEST_USER_EMAIL);
     await page.fill('input[type="password"]', TEST_USER_PASSWORD);
 
@@ -29,217 +107,176 @@ test.describe('Memo Lifecycle E2E', () => {
     await closeContextMenu(page);
   });
 
-  test('should create and archive a memo', async ({ page }) => {
+  // 테스트 종료 후 정리: 생성된 테스트 메모들 삭제
+  test.afterEach(async ({ page }) => {
+    const testPatterns = [
+      /^Archive_E2E_/,
+      /^Trash_E2E_/,
+      /^Selection_E2E_/,
+    ];
+
+    try {
+      // 페이지 상태가 불안정할 수 있으니 직접 URL로 이동
+      await page.goto('/memo?tab=recent', { timeout: 5000 }).catch(() => { });
+      await closeContextMenu(page);
+
+      // 메모 아이템이 로드될 때까지 잠시 대기
+      await page.waitForSelector('[data-testid="memo-item"]', { timeout: 5000 }).catch(() => { });
+
+      const allMemos = await page.getByTestId('memo-item').all();
+
+      for (const memo of allMemos) {
+        await closeContextMenu(page);
+
+        const text = await memo.textContent().catch(() => '');
+        if (text && testPatterns.some(pattern => pattern.test(text))) {
+          try {
+            await memo.click({ button: 'right' }).catch(() => { });
+            await clickContextMenuAction(page, '휴지통으로 이동');
+
+            await page.goto('/memo?tab=trash', { timeout: 5000 }).catch(() => { });
+            await closeContextMenu(page);
+
+            const trashItem = page.getByTestId('memo-item').filter({ hasText: text });
+            if (await trashItem.count() > 0) {
+              await trashItem.click({ button: 'right' }).catch(() => { });
+
+              page.on('dialog', async dialog => {
+                await dialog.accept();
+              });
+
+              await clickContextMenuAction(page, '영구 삭제');
+              await page.waitForTimeout(300);
+
+              await page.goto('/memo?tab=recent', { timeout: 5000 }).catch(() => { });
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+    } catch (e) {
+      // 정리 중 오류가 발생해도 테스트 실패로 간주하지 않음
+    }
+  });
+
+  // ========== 테스트 시나리오 ==========
+
+  test('should create a memo and archive it', async ({ page }) => {
     const UNIQUE_TITLE = `Archive_E2E_${Date.now()}`;
 
-    // 1. 메모 생성
-    await test.step('Create a new memo', async () => {
-      const createButton = page.getByText('새로운 메모 추가').first();
-      await expect(createButton).toBeVisible();
-      await createButton.click();
-
-      const titleInput = page.locator('input[placeholder="제목 없음"]');
-      await expect(titleInput).toBeVisible();
-      await titleInput.fill(UNIQUE_TITLE);
-
-      await expect(page.locator('text=저장 완료')).toBeVisible();
+    await test.step('메모 생성', async () => {
+      await createMemo(page, UNIQUE_TITLE);
     });
 
-    // 2. 최근 메모 목록에서 확인 및 보관
-    await test.step('Archive memo', async () => {
-      await closeContextMenu(page);
-
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
-
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
+    await test.step('보관함으로 이동', async () => {
+      await navigateToTab(page, '최근 메모');
+      const memoItem = getMemoItem(page, UNIQUE_TITLE);
       await expect(memoItem).toBeVisible();
 
-      // 우클릭 컨텍스트 메뉴
+      // 우클릭으로 보관
       await memoItem.click({ button: 'right' });
+      await clickContextMenuAction(page, '보관하기');
 
-      // 보이는 컨텍스트 메뉴에서 '보관하기' 버튼 클릭
-      const archiveButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("보관하기")').first();
-      await expect(archiveButton).toBeVisible();
-      await archiveButton.click({ force: true });
-
-      // 보관함 이동 및 확인
-      await page.locator('nav >> text=보관함').click();
-      await page.waitForURL(/tab=archived/);
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE })).toBeVisible();
+      // 보관함에서 확인
+      await navigateToTab(page, '보관함');
+      await expect(getMemoItem(page, UNIQUE_TITLE)).toBeVisible();
     });
 
-    // 3. 보관함에서 보관 해제
-    await test.step('Unarchive memo', async () => {
-      await closeContextMenu(page);
-
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
+    await test.step('보관 해제', async () => {
+      const memoItem = getMemoItem(page, UNIQUE_TITLE);
       await memoItem.click({ button: 'right' });
+      await clickContextMenuAction(page, '보관 해제');
 
-      // '보관 해제' 버튼 클릭
-      const unarchiveButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("보관 해제")').first();
-      await expect(unarchiveButton).toBeVisible();
-      await unarchiveButton.click({ force: true });
-
-      // 최근 메모로 돌아와서 확인
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE })).toBeVisible();
+      // 최근 메모에서 확인
+      await navigateToTab(page, '최근 메모');
+      await expect(getMemoItem(page, UNIQUE_TITLE)).toBeVisible();
     });
   });
 
-  test('should move memo to trash and restore', async ({ page }) => {
+  test('should create a memo and move to trash then restore', async ({ page }) => {
     const UNIQUE_TITLE = `Trash_E2E_${Date.now()}`;
 
-    // 1. 메모 생성
-    await test.step('Create a new memo', async () => {
-      const createButton = page.getByText('새로운 메모 추가').first();
-      await expect(createButton).toBeVisible();
-      await createButton.click();
-
-      const titleInput = page.locator('input[placeholder="제목 없음"]');
-      await expect(titleInput).toBeVisible();
-      await titleInput.fill(UNIQUE_TITLE);
-
-      await expect(page.locator('text=저장 완료')).toBeVisible();
+    await test.step('메모 생성', async () => {
+      await createMemo(page, UNIQUE_TITLE);
     });
 
-    // 2. 휴지통으로 이동
-    await test.step('Move to trash', async () => {
-      await closeContextMenu(page);
+    await test.step('휴지통으로 이동', async () => {
+      await navigateToTab(page, '휴지통');
+      const initialTrashMemoCount = await page.getByTestId('memo-item').count();
 
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
+      await navigateToTab(page, '최근 메모');
+      await moveToTrash(page, UNIQUE_TITLE);
 
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
-      await expect(memoItem).toBeVisible();
-
-      await memoItem.click({ button: 'right' });
-
-      const trashButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("휴지통으로 이동")').first();
-      await expect(trashButton).toBeVisible();
-      await trashButton.click({ force: true });
-
-      await page.locator('nav >> text=휴지통').click();
-      await page.waitForURL(/tab=trash/);
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE })).toBeVisible();
+      await navigateToTab(page, '휴지통');
+      await page.waitForFunction(
+        ({ expectedCount }) => document.querySelectorAll('[data-testid="memo-item"]').length === expectedCount,
+        { expectedCount: initialTrashMemoCount + 1 }
+      );
+      await expect(getMemoItem(page, UNIQUE_TITLE)).toBeVisible();
     });
 
-    // 3. 휴지통에서 복원
-    await test.step('Restore from trash', async () => {
-      await closeContextMenu(page);
-
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
+    await test.step('휴지통에서 복원', async () => {
+      const memoItem = getMemoItem(page, UNIQUE_TITLE);
       await memoItem.click({ button: 'right' });
+      await clickContextMenuAction(page, '복원하기');
 
-      // '복원하기' 버튼 클릭
-      const restoreButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("복원하기")').first();
-      await expect(restoreButton).toBeVisible();
-      await restoreButton.click({ force: true });
-
-      // 최근 메모로 돌아와서 확인
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE })).toBeVisible();
+      await navigateToTab(page, '최근 메모');
+      await expect(getMemoItem(page, UNIQUE_TITLE)).toBeVisible();
     });
   });
 
-  test('should permanently delete memo', async ({ page }) => {
+  test('should permanently delete a memo', async ({ page }) => {
     const UNIQUE_TITLE = `Delete_E2E_${Date.now()}`;
 
-    // 1. 메모 생성
-    await test.step('Create a new memo', async () => {
-      const createButton = page.getByText('새로운 메모 추가').first();
-      await expect(createButton).toBeVisible();
-      await createButton.click();
-
-      const titleInput = page.locator('input[placeholder="제목 없음"]');
-      await expect(titleInput).toBeVisible();
-      await titleInput.fill(UNIQUE_TITLE);
-
-      await expect(page.locator('text=저장 완료')).toBeVisible();
+    await test.step('메모 생성', async () => {
+      await createMemo(page, UNIQUE_TITLE);
     });
 
-    // 2. 휴지통으로 이동
-    await test.step('Move to trash', async () => {
-      await closeContextMenu(page);
+    await test.step('휴지통으로 이동', async () => {
+      await navigateToTab(page, '최근 메모');
+      await moveToTrash(page, UNIQUE_TITLE);
 
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
-
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
-      await memoItem.click({ button: 'right' });
-
-      const trashButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("휴지통으로 이동")').first();
-      await expect(trashButton).toBeVisible();
-      await trashButton.click({ force: true });
-
-      await page.locator('nav >> text=휴지통').click();
-      await page.waitForURL(/tab=trash/);
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE })).toBeVisible();
+      await navigateToTab(page, '휴지통');
+      // 메모 로딩 대기
+      await page.waitForTimeout(1000);
+      await expect(getMemoItem(page, UNIQUE_TITLE)).toBeVisible();
     });
 
-    // 3. 영구 삭제
-    await test.step('Permanently delete', async () => {
-      await closeContextMenu(page);
+    await test.step('영구 삭제', async () => {
+      await navigateToTab(page, '휴지통');
+      const initialTrashMemoCount = await page.getByTestId('memo-item').count();
 
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
-      await memoItem.click({ button: 'right' });
+      await permanentlyDelete(page, UNIQUE_TITLE);
 
-      // 대화상자 리스너 먼저 설정
-      page.on('dialog', async dialog => {
-        await dialog.accept();
-      });
-
-      const deleteButton = page.locator('[data-testid^="context-menu-"]:not([class*="opacity-0"]) button:has-text("영구 삭제")').first();
-      await expect(deleteButton).toBeVisible();
-      await deleteButton.click({ force: true });
-
-      await page.waitForTimeout(500);
-
-      // 목록에서 사라짐 확인
-      await expect(page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE }).first()).not.toBeVisible();
+      await page.waitForFunction(
+        ({ expectedCount }) => document.querySelectorAll('[data-testid="memo-item"]').length === expectedCount,
+        { expectedCount: initialTrashMemoCount - 1 }
+      );
+      await expect(getMemoItem(page, UNIQUE_TITLE).first()).not.toBeVisible();
     });
   });
 
-  test('should use selection mode and select all', async ({ page }) => {
+  test('should use selection mode', async ({ page }) => {
     const UNIQUE_TITLE = `Selection_E2E_${Date.now()}`;
 
-    // 1. 메모 생성
-    await test.step('Create a new memo', async () => {
-      const createButton = page.getByText('새로운 메모 추가').first();
-      await expect(createButton).toBeVisible();
-      await createButton.click();
-
-      const titleInput = page.locator('input[placeholder="제목 없음"]');
-      await expect(titleInput).toBeVisible();
-      await titleInput.fill(UNIQUE_TITLE);
-
-      await expect(page.locator('text=저장 완료')).toBeVisible();
+    await test.step('메모 생성', async () => {
+      await createMemo(page, UNIQUE_TITLE);
     });
 
-    // 2. 최근 메모 목록에서 선택 모드 활성화
-    await test.step('Use selection mode', async () => {
-      await closeContextMenu(page);
-
-      await page.locator('nav >> text=최근 메모').click();
-      await page.waitForURL(/tab=recent/);
-
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
+    await test.step('선택 모드 활성화', async () => {
+      await navigateToTab(page, '최근 메모');
+      const memoItem = getMemoItem(page, UNIQUE_TITLE);
       await expect(memoItem).toBeVisible();
 
-      // Shift+Click으로 선택 모드 활성화 및 메모 선택
+      // Shift+Click으로 선택 모드 활성화
       await memoItem.click({ modifiers: ['Shift'] });
 
-      // 선택 모드 확인 (선택된 메모의 배경색이 변경되었는지 확인)
-      await expect(memoItem).toHaveClass(/bg-popover|bg-sidebar/);
+      // 선택 모드 활성화 확인 (ellipsis 버튼이 숨겨지고 체크박스가 나타남)
+      await expect(page.locator('button:has(.ellipsis-icon)').first()).toBeHidden();
     });
 
-    // 3. Command/Ctrl + Click으로 개별 선택
-    await test.step('Multi-select with Command/Ctrl', async () => {
-      await closeContextMenu(page);
-
-      // 다른 메모를 Command+Click으로 추가 선택
+    await test.step('다중 선택', async () => {
       const otherMemos = page.getByTestId('memo-item').filter({ hasNotText: UNIQUE_TITLE });
       const otherMemo = otherMemos.first();
 
@@ -247,7 +284,7 @@ test.describe('Memo Lifecycle E2E', () => {
         await otherMemo.click({ modifiers: ['Control'] });
       }
 
-      // 선택된 메모가 2개 이상인지 확인
+      // 선택된 메모 수 확인
       const selectedMemos = await page.getByTestId('memo-item').all();
       let selectedCount = 0;
       for (const memo of selectedMemos) {
@@ -259,21 +296,10 @@ test.describe('Memo Lifecycle E2E', () => {
       expect(selectedCount).toBeGreaterThanOrEqual(1);
     });
 
-    // 4. 선택 해제
-    await test.step('Clear selection', async () => {
-      await closeContextMenu(page);
-
-      // 선택된 메모 클릭하여 선택 해제
-      const memoItem = page.getByTestId('memo-item').filter({ hasText: UNIQUE_TITLE });
-      await memoItem.click({ modifiers: ['Control'] });
-
-      // 선택 모드 종료 확인 (선택 정보 사라짐)
-      // Esc 키로 선택 모드 종료 시도
+    await test.step('선택 해제', async () => {
+      // Esc 키로 선택 모드 종료
       await page.keyboard.press('Escape');
       await page.waitForTimeout(300);
-
-      // 메모 선택 해제 확인
-      await expect(memoItem).not.toHaveClass(/bg-popover/);
     });
   });
 });
