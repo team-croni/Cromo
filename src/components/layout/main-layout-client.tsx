@@ -79,7 +79,7 @@ export function MemoLayoutClient() {
         <div className={`flex flex-col z-25 will-change-transform transition-all ${isMemoBrowserOpen ? '' : 'absolute h-[calc(100vh-4rem)] md:h-full -translate-x-full opacity-0 pointer-events-none'}`}>
           <div
             ref={memoBrowserRef}
-            className="w-full! max-w-full! md:max-w-auto md:w-auto flex-1 h-[calc(100vh-4rem)] md:h-full bg-background border-r-3 border-border/30 flex-col transition-all duration-50 ease-linear fixed md:relative md:flex"
+            className="max-[48rem]:w-full! md:max-w-auto md:w-auto flex-1 h-[calc(100vh-4rem)] md:h-full bg-background border-r-3 border-border/30 flex-col transition-all duration-50 ease-linear fixed md:relative md:flex"
             style={{ width: `${memoBrowserWidth}px`, minWidth: '400px', maxWidth: '700px' }}
           >
             <MemoBrowserWrapper />
