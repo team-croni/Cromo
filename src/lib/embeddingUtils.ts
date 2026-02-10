@@ -47,7 +47,7 @@ async function generateOpenRouterEmbedding(text: string | string[]): Promise<any
     if (error?.name === 'AbortError') {
       logger.error("OpenRouter 임베딩 생성 시간 초과");
     } else {
-      logger.error("OpenRouter 임베딩 생성 중 오류 발생:", {
+      logger.error("OpenRouter 임베딩 생성 중 오류 발생", {
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }

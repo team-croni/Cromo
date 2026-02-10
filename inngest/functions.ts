@@ -10,9 +10,8 @@ export const purgeUsers = inngest.createFunction(
   },
   { cron: "0 0 * * *" }, // Run daily at midnight
   async ({ step }) => {
-    logger.scheduler("Executing purge deleted users job via cron");
     const result = await permanentlyDeleteOldSoftDeletedUsers();
-    logger.scheduler(`Purge deleted users job completed. Result: ${JSON.stringify(result)}`);
+    // logger.scheduler(`Purge deleted users job completed. Result: ${JSON.stringify(result)}`);
     return result;
   }
 );
@@ -25,9 +24,8 @@ export const purgeUsersEvent = inngest.createFunction(
   },
   { event: "app/run.purge-users-job" }, // Event trigger for manual execution
   async ({ step }) => {
-    logger.scheduler("Executing purge deleted users job via event");
     const result = await permanentlyDeleteOldSoftDeletedUsers();
-    logger.scheduler(`Purge deleted users job completed. Result: ${JSON.stringify(result)}`);
+    // logger.scheduler(`Purge deleted users job completed. Result: ${JSON.stringify(result)}`);
     return result;
   }
 );
@@ -40,9 +38,8 @@ export const processEmbeddings = inngest.createFunction(
   },
   { event: "app/process.embedding-updates" }, // Trigger event for embedding updates
   async ({ step }) => {
-    logger.scheduler("Executing process embedding updates job");
     const result = await processPendingEmbeddingUpdates(5); // 배치 크기를 줄여 서버 부하 감소
-    logger.scheduler(`Process embedding updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    // logger.scheduler(`Process embedding updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
     return result;
   }
 );
@@ -55,9 +52,8 @@ export const processEmbeddingsScheduled = inngest.createFunction(
   },
   { cron: "0/4 * * * *" },
   async ({ step }) => {
-    logger.scheduler("Executing scheduled process embedding updates job");
     const result = await processPendingEmbeddingUpdates(2); // 최대 2개씩 처리
-    logger.scheduler(`Scheduled process embedding updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    // ogger.scheduler(`Scheduled process embedding updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
     return result;
   }
 );
@@ -70,9 +66,8 @@ export const processTags = inngest.createFunction(
   },
   { event: "app/process.tag-updates" }, // Trigger event for tag updates
   async ({ step }) => {
-    logger.scheduler("Executing process tag updates job");
     const result = await processPendingTagUpdates(5); // 배치 크기를 줄여 서버 부하 감소
-    logger.scheduler(`Process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    // logger.scheduler(`Process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
     return result;
   }
 );
@@ -85,9 +80,8 @@ export const processTagsScheduled = inngest.createFunction(
   },
   { cron: "2/4 * * * *" },
   async ({ step }) => {
-    logger.scheduler("Executing scheduled process tag updates job");
     const result = await processPendingTagUpdates(5); // 최대 5개씩 처리
-    logger.scheduler(`Scheduled process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    // logger.scheduler(`Scheduled process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
     return result;
   }
 );
