@@ -45,6 +45,10 @@ interface MemoBrowserStore {
 
   isSearchFocused: boolean;
   setIsSearchFocused: (isFocused: boolean) => void;
+
+  // Scroll position for virtualization
+  scrollOffset: number;
+  setScrollOffset: (offset: number) => void;
 }
 
 export const useMemoBrowserStore = create<MemoBrowserStore>((set, get) => ({
@@ -142,4 +146,7 @@ export const useMemoBrowserStore = create<MemoBrowserStore>((set, get) => ({
 
   isSearchFocused: false,
   setIsSearchFocused: (isFocused) => set({ isSearchFocused: isFocused }),
+
+  scrollOffset: 0,
+  setScrollOffset: (offset) => set({ scrollOffset: offset }),
 }));

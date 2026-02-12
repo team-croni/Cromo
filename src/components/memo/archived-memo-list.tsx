@@ -4,10 +4,11 @@ import { useSearchParams } from 'next/navigation';
 import { MemoListContainer } from '@components/memo/memo-list-container';
 import { useMemoBrowserStore } from '@store/memoBrowserStore';
 import { Categorized } from '@components/memo/categorized-memo-list';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Memo } from '@/types';
 import { getFilteredMemos } from '@utils/getFilteredItems';
 import { RecentlyUpdatedItem } from '@components/memo/recently-updated-item';
+import { flattenCategorizedMemos, flattenMemos } from '@/utils/virtualListUtils';
 
 export function ArchivedMemoList() {
   const { archivedMemos, archivedMemosLoading, error, refreshArchivedMemos } = useMemos();
@@ -36,13 +37,27 @@ export function ArchivedMemoList() {
     }
   }, [folderId, tabParam])
 
-  const filteredMemos = getFilteredMemos(allMemos, filterOptions);
+  const filteredMemos = useMemo(() => getFilteredMemos(allMemos, filterOptions), [allMemos, filterOptions]);
 
   // 카테고리 분류 여부 결정 (정렬 옵션에 따라 결정)
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 카테고리별로 분류
-  const categorizedMemos = shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, false, filterOptions.groupBy) : null;
+  const categorizedMemos = useMemo(() => 
+    shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, false, filterOptions.groupBy) : null
+  , [shouldCategorize, filteredMemos, filterOptions]);
+
+  // 가상 리스트를 위한 아이템 평탄화
+  const virtualItems = useMemo(() => {
+    if (shouldCategorize && categorizedMemos) {
+      const categoryOrder = filterOptions.groupBy === 'monthly'
+        ? Object.keys(categorizedMemos)
+        : getCategoryOrder(filterOptions.sortDirection);
+      
+      return flattenCategorizedMemos(categorizedMemos, categoryOrder, filterOptions.groupBy);
+    }
+    return flattenMemos(filteredMemos);
+  }, [shouldCategorize, categorizedMemos, filteredMemos, filterOptions]);
 
   if (!shouldShow) return null;
 
@@ -54,6 +69,7 @@ export function ArchivedMemoList() {
       emptyMessage="보관된 메모가 없습니다."
       onRetry={refreshArchivedMemos}
       memos={filteredMemos}
+      virtualItems={virtualItems}
     >
       {shouldCategorize && categorizedMemos ? (
         <div>

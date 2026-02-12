@@ -5,6 +5,8 @@ import { useMemoBrowserStore } from '@store/memoBrowserStore';
 import { MemoListContainer } from '@components/memo/memo-list-container';
 import { Categorized } from '@components/memo/categorized-memo-list';
 import { RecentlyUpdatedItem } from '@components/memo/recently-updated-item';
+import { useMemo } from 'react';
+import { flattenCategorizedMemos, flattenMemos } from '@/utils/virtualListUtils';
 
 export function TrashMemoList() {
   const { deletedMemos, deletedMemosLoading, error, refreshDeletedMemos } = useMemos();
@@ -16,7 +18,21 @@ export function TrashMemoList() {
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 카테고리별로 분류
-  const categorizedMemos = shouldCategorize ? categorizeMemos([...deletedMemos], filterOptions.sortBy, filterOptions.sortDirection, false, filterOptions.groupBy) : null;
+  const categorizedMemos = useMemo(() => 
+    shouldCategorize ? categorizeMemos([...deletedMemos], filterOptions.sortBy, filterOptions.sortDirection, false, filterOptions.groupBy) : null
+  , [shouldCategorize, deletedMemos, filterOptions]);
+
+  // 가상 리스트를 위한 아이템 평탄화
+  const virtualItems = useMemo(() => {
+    if (shouldCategorize && categorizedMemos) {
+      const categoryOrder = filterOptions.groupBy === 'monthly'
+        ? Object.keys(categorizedMemos)
+        : getCategoryOrder(filterOptions.sortDirection);
+      
+      return flattenCategorizedMemos(categorizedMemos, categoryOrder, filterOptions.groupBy);
+    }
+    return flattenMemos(deletedMemos);
+  }, [shouldCategorize, categorizedMemos, deletedMemos, filterOptions]);
 
   if (tabParam !== 'trash') return null;
 
@@ -28,6 +44,7 @@ export function TrashMemoList() {
       emptyMessage="휴지통이 비어 있습니다."
       onRetry={refreshDeletedMemos}
       memos={deletedMemos}
+      virtualItems={virtualItems}
     >
       {shouldCategorize && categorizedMemos ? (
         <div>

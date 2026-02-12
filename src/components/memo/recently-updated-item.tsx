@@ -595,7 +595,7 @@ export const RecentlyUpdatedItem = memo(({
     <div
       data-testid="memo-item"
       className={classNames(
-        'group flex flex-col relative h-38 select-none border-b border-muted-foreground/20 group-last:border-b-0',
+        'group flex flex-col relative h-38 select-none group-last:border-b-0',
         {
           'opacity-70 hover:opacity-100': activeMode === 'selection' && !isSelected,
           'bg-popover': activeMode === 'selection' && isSelected,

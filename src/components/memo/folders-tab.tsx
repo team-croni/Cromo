@@ -7,10 +7,11 @@ import { Memo } from '@/types';
 import { getFilteredMemos } from '@utils/getFilteredItems';
 import { categorizeMemos, getCategoryOrder } from '@utils/getCategorizedItems';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo as useReactMemo } from 'react';
 import { MemoListContainer } from '@components/memo/memo-list-container';
 import { Categorized } from '@components/memo/categorized-memo-list';
 import { RecentlyUpdatedItem } from '@components/memo/recently-updated-item';
+import { flattenCategorizedMemos, flattenMemos } from '@/utils/virtualListUtils';
 
 export function FoldersTab() {
   const { activeTab } = useTabStore();
@@ -60,16 +61,30 @@ export function FoldersTab() {
     displayMemos = allMemos.filter(memo => memo.folderId === null);
   }
 
-  if (!shouldShow) return null;
-
   // 필터링 적용
-  const filteredMemos = getFilteredMemos(displayMemos, filterOptions);
+  const filteredMemos = useReactMemo(() => getFilteredMemos(displayMemos, filterOptions), [displayMemos, filterOptions]);
 
   // 카테고리 분류 여부 결정
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 카테고리별로 분류
-  const categorizedMemos = shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, filterOptions.showLiveShareTop, filterOptions.groupBy) : null;
+  const categorizedMemos = useReactMemo(() => 
+    shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, filterOptions.showLiveShareTop, filterOptions.groupBy) : null
+  , [shouldCategorize, filteredMemos, filterOptions]);
+
+  // 가상 리스트를 위한 아이템 평탄화
+  const virtualItems = useReactMemo(() => {
+    if (shouldCategorize && categorizedMemos) {
+      const categoryOrder = filterOptions.groupBy === 'monthly'
+        ? Object.keys(categorizedMemos)
+        : getCategoryOrder(filterOptions.sortDirection, filterOptions.showLiveShareTop);
+      
+      return flattenCategorizedMemos(categorizedMemos, categoryOrder, filterOptions.groupBy);
+    }
+    return flattenMemos(filteredMemos);
+  }, [shouldCategorize, categorizedMemos, filteredMemos, filterOptions]);
+
+  if (!shouldShow) return null;
 
   return (
     <MemoListContainer
@@ -77,6 +92,7 @@ export function FoldersTab() {
       isEmpty={folderMemos.length === 0}
       emptyMessage={emptyMessage}
       memos={filteredMemos}
+      virtualItems={virtualItems}
     >
       {shouldCategorize && categorizedMemos ? (
         <div>

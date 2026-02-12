@@ -2,10 +2,11 @@ import { useMemos } from '@hooks/useMemos';
 import { useSearchParams } from 'next/navigation';
 import { useMemoBrowserStore } from '@store/memoBrowserStore';
 import { Memo } from '@/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { MemoListContainer } from '@components/memo/memo-list-container';
 import { Categorized } from '@components/memo/categorized-memo-list';
 import { RecentlyUpdatedItem } from '@components/memo/recently-updated-item';
+import { flattenMemos, VirtualListItem } from '@/utils/virtualListUtils';
 
 export function SharedMemoList() {
   const { sharedMemos, sharedMemosLoading, error, refreshSharedMemos } = useMemos();
@@ -31,12 +32,33 @@ export function SharedMemoList() {
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 LIVE ON과 LIVE OFF로 분류
-  const liveOnMemos = sharedMemos.filter(memo => memo.isLiveShareEnabled);
-  const liveOffMemos = sharedMemos.filter(memo => !memo.isLiveShareEnabled);
-  const categorizedMemos = shouldCategorize ? {
-    'LIVE ON': liveOnMemos,
-    'LIVE OFF': liveOffMemos,
-  } : null;
+  const categorizedMemos = useMemo(() => {
+    if (!shouldCategorize) return null;
+    const liveOnMemos = sharedMemos.filter(memo => memo.isLiveShareEnabled);
+    const liveOffMemos = sharedMemos.filter(memo => !memo.isLiveShareEnabled);
+    return {
+      'LIVE ON': liveOnMemos,
+      'LIVE OFF': liveOffMemos,
+    };
+  }, [shouldCategorize, sharedMemos]);
+
+  // 가상 리스트를 위한 아이템 평탄화
+  const virtualItems = useMemo(() => {
+    if (shouldCategorize && categorizedMemos) {
+      const items: VirtualListItem[] = [];
+      Object.keys(categorizedMemos).forEach(tag => {
+        const memos = (categorizedMemos as any)[tag];
+        if (memos.length > 0) {
+          items.push({ type: 'header', id: `header-${tag}`, label: tag });
+          memos.forEach((memo: Memo) => {
+            items.push({ type: 'memo', id: memo.id, data: memo });
+          });
+        }
+      });
+      return items;
+    }
+    return flattenMemos(sharedMemos);
+  }, [shouldCategorize, categorizedMemos, sharedMemos]);
 
   if (!shouldShow) return null;
 
@@ -48,6 +70,7 @@ export function SharedMemoList() {
       emptyMessage="공유된 메모가 없습니다."
       onRetry={refreshSharedMemos}
       memos={sharedMemos}
+      virtualItems={virtualItems}
     >
       {shouldCategorize && categorizedMemos ? (
         <div>
