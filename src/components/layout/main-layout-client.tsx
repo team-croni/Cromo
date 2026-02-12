@@ -80,7 +80,7 @@ export function MemoLayoutClient() {
           <div
             ref={memoBrowserRef}
             className="max-[48rem]:w-full! md:max-w-auto md:w-auto flex-1 h-[calc(100vh-4rem)] md:h-full bg-background border-r-3 border-border/30 flex-col transition-all duration-50 ease-linear fixed md:relative md:flex"
-            style={{ width: `${memoBrowserWidth}px`, minWidth: '400px', maxWidth: '700px' }}
+            style={{ width: `${memoBrowserWidth}px`, minWidth: '400px', maxWidth: '768px' }}
           >
             <MemoBrowserWrapper />
             <div

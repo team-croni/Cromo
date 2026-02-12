@@ -52,10 +52,10 @@ export function ErrorDisplay() {
   };
 
   return (
-    <div className={`absolute px-4 w-full bottom-26 left-1/2 transform -translate-x-1/2 z-50 transition-all ${isVisible ? '' : 'opacity-0 pointer-events-none scale-80'}`}>
+    <div className={`absolute px-5 w-full bottom-26 left-1/2 transform -translate-x-1/2 z-50 transition-all ${isVisible ? '' : 'opacity-0 pointer-events-none scale-80'}`}>
       <div className="w-fit mx-auto bg-inverse text-sm text-destructive font-normal px-5 py-2 rounded-xl shadow-lg/3 dark:shadow-lg/15 flex items-center">
-        <TriangleAlert className="w-5 h-5 mr-4" />
-        <span>{getErrorMessageByType()}</span>
+        <TriangleAlert className="shrink-0 w-5 h-5 mr-4" />
+        <span className='line-clamp-2'>{getErrorMessageByType()}</span>
         <button
           onClick={hideError}
           className="p-2 ml-5 -mr-2 text-muted-foreground hover:bg-foreground/10 hover:text-foreground rounded-full"

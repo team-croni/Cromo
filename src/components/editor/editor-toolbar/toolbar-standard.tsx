@@ -110,7 +110,7 @@ export const ToolbarStandard = () => {
     <>
       <div className={`absolute left-1/2 -translate-x-1/2 w-full flex items-center p-2 py-3 transition-all ${(!shouldShowToolbar || hasAIGeneratedContent || isAILoading) ? 'opacity-0 pointer-events-none translate-y-4' : 'opacity-100'}`}>
         <div className="w-full flex justify-between gap-4 items-center flex-1 bg-popover rounded-xl border border-popover-border p-1.5 shadow-lg/3 dark:shadow-lg/10">
-          <div className="relative min-w-0 flex-1 flex items-center gap-1">
+          <div className="relative min-w-0 flex-1 flex items-center gap-1 overflow-hidden">
             <div ref={scrollContainerRef} className="flex items-center gap-1 overflow-x-auto no-scrollbar w-full">
               <ToolbarDropdown
                 title="AI 기능"
