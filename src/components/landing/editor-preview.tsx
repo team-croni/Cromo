@@ -102,7 +102,7 @@ export function EditorPreview() {
               >
                 <div className="flex -space-x-2 mr-1">
                   <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
-                    <Image src="https://i.pravatar.cc/250?img=31" alt="logo" fill />
+                    <Image src="https://i.pravatar.cc/250?img=31" alt="공유 사용자 아바타" fill />
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />
@@ -114,7 +114,7 @@ export function EditorPreview() {
               >
                 <div className="flex -space-x-2 mr-1">
                   <div className="relative w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background overflow-hidden">
-                    <Image src="https://i.pravatar.cc/250?img=11" alt="logo" fill />
+                    <Image src="https://i.pravatar.cc/250?img=11" alt="공유 사용자 아바타" fill />
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 stroke-1.5 text-primary/80" />

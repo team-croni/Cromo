@@ -42,9 +42,9 @@ const createRichDummyData = () => {
             <blockquote>"이것은 단순한 저장소가 아닙니다. 스스로 정리하는 제2의 뇌입니다."</blockquote>
             <h3>섹션 3: 라이브 데모 (25:00 - 40:00)</h3>
             <ul>
-              <li>실시간 협업 기능 시연.</li>
-              <li>AI 기반 자동 정리 기능 데모.</li>
-            </ul>
+              <li>실시간 공유 기능 시연.</li>
+                <li>AI 기반 자동 정리 기능 데모.</li>
+              </ul>
             <p><em>참고: 금요일까지 엔지니어링 팀과 리허설 필요.</em></p>
           `,
           createdAt: getPastDate(7), // 1주 전 생성
@@ -55,10 +55,10 @@ const createRichDummyData = () => {
           content: `
             <h2>앱 스토어 최적화 (ASO)</h2>
             <h3>짧은 설명</h3>
-            <p>Cromo는 팀의 아이디어가 즉시 동기화되는 워크스페이스입니다. 협업 지식 관리의 미래를 경험하세요.</p>
+            <p>Cromo는 팀의 아이디어가 즉시 공유되는 워크스페이스입니다. 지식 관리의 미래를 경험하세요.</p>
             <h3>주요 기능</h3>
             <ul>
-              <li><strong>실시간 동기화:</strong> 지연 없는 완벽한 협업.</li>
+              <li><strong>실시간 공유:</strong> 지연 없는 실시간 동기화로 여러 사람이 동시에 메모를 작성하고 수정할 수 있습니다.</li>
               <li><strong>AI 정리:</strong> 자동으로 정리되는 폴더 구조.</li>
               <li><strong>리치 에디터:</strong> 마크다운 + 블록 기반 편집 지원.</li>
             </ul>

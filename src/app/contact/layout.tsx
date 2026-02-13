@@ -1,5 +1,11 @@
 import Link from "next/link";
 import LogoSymbolSvg from "@svgs/logo/logo-dark.svg"
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: '문의하기',
+  description: 'Cromo에 대한 문의사항이나 피드백을 보내주세요.',
+};
 
 export default function ContactLayout({ children }: { children?: React.ReactNode }) {
   return (

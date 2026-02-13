@@ -1,20 +1,14 @@
-import Link from "next/link";
-import LogoSymbolSvg from "@svgs/logo/logo-dark.svg"
+import { Metadata } from 'next';
 
-export default function LoginLayout({ children }: { children?: React.ReactNode }) {
-  return (
-    <main className="flex-1">
-      <header className="fixed top-0 z-50 w-full opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto">
-        <div className="flex items-center px-6 py-4 mx-auto">
-          <Link href="/">
-            <div className="flex items-center">
-              <LogoSymbolSvg className="ml-1 h-7 w-7" />
-              <p className="ml-2 text-[1.75rem] font-medium font-baloo tracking-[-0.5px] text-foreground">Cromo</p>
-            </div>
-          </Link>
-        </div>
-      </header>
-      {children}
-    </main>
-  );
+export const metadata: Metadata = {
+  title: '로그인',
+  description: 'Cromo에 로그인하여 AI와 함께 메모를 관리하고 공유하세요.',
+};
+
+export default function LoginLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
 }

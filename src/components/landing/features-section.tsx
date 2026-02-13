@@ -66,7 +66,7 @@ export function FeaturesSection() {
             },
             {
               icon: Users,
-              title: "실시간 협업",
+              title: "실시간 공유",
               desc: "소켓 기반 실시간 동기화로 여러 사람이 동시에 메모를 작성하고 수정할 수 있습니다."
             },
             {
@@ -118,10 +118,10 @@ export function FeaturesSection() {
               <p className="animate-pulse mb-px">LIVE ON</p>
             </div>
             <h2 className="text-xl md:text-[2.5rem] font-medium mt-5 mb-5 text-transparent bg-clip-text bg-linear-to-b from-foreground to-[#a2a2a8]">
-              실시간 공유 & 협업
+              실시간 공유
             </h2>
             <p className="text-base sm:text-lg leading-normal text-muted-foreground whitespace-break-spaces">
-              소켓 기반의 강력한 실시간 동기화 기술을 통해, 링크 하나로 간편하게 협업 공간을 공유할 수 있습니다.
+              소켓 기반의 강력한 실시간 동기화 기술을 통해, 링크 하나로 간편하게 메모를 공유할 수 있습니다.
               여러 명의 팀원이 동시에 접속하여도 지연 없이 매끄럽게 메모를 확인하고 수정할 수 있습니다.
             </p>
           </div>

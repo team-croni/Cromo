@@ -14,7 +14,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-5 space-y-2 mt-2">
           <li>회원 가입 및 식별, 본인 확인</li>
           <li>AI 기반 콘텐츠 분석, 요약, 자동 분류 등 서비스 핵심 기능 제공</li>
-          <li>실시간 협업 및 공유 기능 운영</li>
+          <li>실시간 공유 기능 운영</li>
           <li>서비스 개선을 위한 통계 분석 및 신규 서비스 개발</li>
           <li>고객 상담 및 불만 처리</li>
         </ul>

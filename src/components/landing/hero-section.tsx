@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight, Search } from "lucide-react";
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,7 +88,13 @@ export function HeroSection() {
 
             {/* Placeholder Content Area */}
             <div className="relative aspect-1600/968 bg-[#0c0c0e] w-full flex items-center justify-center overflow-hidden group">
-              <img src="/images/hero-screenshot1.png" alt="Hero Screenshot" className="object-cover pointer-events-none select-none" />
+              <Image 
+                src="/images/hero-screenshot1.png" 
+                alt="Cromo 메모 대시보드 미리보기" 
+                width={1600}
+                height={968}
+                className="object-cover pointer-events-none select-none" 
+              />
             </div>
           </div>
         </div>

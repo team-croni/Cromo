@@ -30,7 +30,7 @@ export async function callOpenRouter(
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://cromo.app", // 사이트 URL
+        "HTTP-Referer": "https://cromo.site", // 사이트 URL
         "X-Title": "Cromo", // 사이트 이름
       },
       body: JSON.stringify({

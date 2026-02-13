@@ -19,12 +19,50 @@ export const viewport = {
   themeColor: '#26282b',
 };
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+  ? (process.env.NEXT_PUBLIC_APP_URL.startsWith('http') ? process.env.NEXT_PUBLIC_APP_URL : `https://${process.env.NEXT_PUBLIC_APP_URL}`)
+  : "https://cromo.site";
+
 export const metadata: Metadata = {
-  title: "Cromo",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Cromo",
+    template: "%s | Cromo",
+  },
   description: "AI와 함께하는 스마트한 메모 관리",
   manifest: "/manifest.json",
-  keywords: [""],
-  authors: [{ name: "" }],
+  keywords: ["Cromo", "크로모", "AI 메모", "스마트 메모", "실시간 공유", "지능형 검색", "메모 앱"],
+  authors: [{ name: "Croni", url: "https://github.com/team-croni" }],
+  creator: "Croni",
+  publisher: "Croni",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "https://cromo.site",
+    title: "Cromo",
+    description: "AI와 함께하는 스마트한 메모 관리",
+    siteName: "Cromo",
+    images: [
+      {
+        url: "/images/hero-screenshot1.png",
+        width: 1600,
+        height: 968,
+        alt: "Cromo - AI와 함께하는 스마트한 메모 관리",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cromo",
+    description: "AI와 함께하는 스마트한 메모 관리",
+    images: ["/images/hero-screenshot1.png"],
+    creator: "@croni",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
