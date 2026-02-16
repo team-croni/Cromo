@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     siteName: "Cromo",
     images: [
       {
-        url: "/images/hero-screenshot1.png",
+        url: "/images/logo-card.png",
         width: 1600,
         height: 968,
         alt: "Cromo - AI와 함께하는 스마트한 메모 관리",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cromo",
     description: "AI와 함께하는 스마트한 메모 관리",
-    images: ["/images/hero-screenshot1.png"],
+    images: ["/images/logo-card.png"],
     creator: "@croni",
   },
   appleWebApp: {

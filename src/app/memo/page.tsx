@@ -55,13 +55,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
       openGraph: {
         title: `${memo.title} | Cromo`,
         description,
-        images: ["/images/hero-screenshot1.png"],
+        images: ["/images/logo-card.png"],
       },
       twitter: {
         card: "summary_large_image",
         title: memo.title,
         description,
-        images: ["/images/hero-screenshot1.png"],
+        images: ["/images/logo-card.png"],
       }
     };
   } catch (error) {

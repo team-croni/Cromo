@@ -32,9 +32,9 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
         type: 'article',
         images: [
           {
-            url: "/images/hero-screenshot1.png",
-            width: 1600,
-            height: 968,
+            url: "/images/logo-card.png",
+            width: 1200,
+            height: 630,
             alt: memo.title,
           },
         ],
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
         card: 'summary_large_image',
         title: memo.title,
         description,
-        images: ["/images/hero-screenshot1.png"],
+        images: ["/images/logo-card.png"],
       }
     };
   } catch (error) {
