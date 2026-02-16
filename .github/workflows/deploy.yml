@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: pnpm/action-setup@v4
         with:
@@ -32,7 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # npx를 사용하여 별도의 전역 설치 없이 최신 버전의 Vercel CLI 실행
       - name: Pull Vercel Environment Information
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
@@ -46,6 +47,20 @@ jobs:
 
       - name: Build Project Artifacts
         run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+
+      # npx를 사용하여 별도의 전역 설치 없이 최신 버전의 Vercel CLI 실행
+      - name: Pull Vercel Environment Information
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
