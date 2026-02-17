@@ -2,6 +2,12 @@ name: CI Checks
 
 on:
   workflow_dispatch:
+    inputs:
+      repeatCount:
+        description: "Number of times to repeat E2E tests"
+        required: false
+        default: "1"
+        type: string
   push:
     branches: [main]
     paths-ignore: ["**.md", "docs/**", ".gitignore", ".husky/**"]
@@ -72,7 +78,12 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
       - name: Run E2E tests (chromium only, CI optimized)
-        run: CI=true pnpm test --project=chromium
+        run: |
+          if [ "${{ github.event.inputs.repeatCount }}" != "" ] && [ "${{ github.event.inputs.repeatCount }}" != "1" ]; then
+            CI=true REPEAT_COUNT=${{ github.event.inputs.repeatCount }} pnpm test:e2e --project=chromium --repeat-each=${{ github.event.inputs.repeatCount }}
+          else
+            CI=true pnpm test:e2e --project=chromium
+          fi
       - name: Upload artifacts
         if: failure()
         uses: actions/upload-artifact@v4

@@ -13,6 +13,7 @@
     "lint": "eslint",
     "lint:workflow": "node-actionlint .github/workflows/*.yml",
     "test:e2e": "playwright test tests/ --workers=1",
+    "test:e2e:repeat": "playwright test tests/ --workers=1 --repeat-each",
     "test:unit": "vitest run",
     "test": "npm run test:e2e && npm run test:unit",
     "db:generate": "prisma generate",

@@ -104,11 +104,16 @@ export function useMemos(): UseMemosResult {
     data: deletedMemos = [],
     isLoading: deletedMemosLoading,
     refetch: refetchDeletedMemos,
+    isError: deletedMemosError,
   } = useQuery<Memo[], Error>({
     queryKey: ['memos', 'deleted'],
     queryFn: () => memoService.fetchMemos('deleted'),
     staleTime: 1000 * 60 * 10, // 10 minutes
-    enabled: activeTab === 'trash'
+    retry: 3,
+    retryDelay: 1000,
+    enabled: activeTab === 'trash',
+    // 에러 시에도 캐시된 데이터 유지
+    gcTime: 1000 * 60 * 30, // 30분간 캐시 유지
   });
 
   const recentMemosLoading = allMemosLoading;
@@ -218,6 +223,8 @@ export function useMemos(): UseMemosResult {
       removeMemoFromCache(deletedMemo.id);
       // 휴지통 목록 갱신
       queryClient.setQueryData<Memo[]>(['memos', 'deleted'], (oldMemos = []) => [...oldMemos, deletedMemo]);
+      // 휴지통 쿼리 무효화하여 최신 데이터 가져오기
+      queryClient.invalidateQueries({ queryKey: ['memos', 'deleted'] });
       queryClient.invalidateQueries({ queryKey: ['memo-counts'] });
       // 검색 결과에서도 메모 제거
       useHybridSearchStore.getState().removeMemoFromSearchResults(deletedMemo.id);

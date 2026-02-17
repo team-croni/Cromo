@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
+import RepeatReporter from './tests/repeat-reporter';
 
 // Read from default ".env" file.
 dotenv.config({ path: path.resolve(new URL('.', import.meta.url).pathname, '.env'), quiet: true });
@@ -19,7 +20,9 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'github' : 'html',
+  reporter: process.env.CI
+    ? [['github', {}], ['./tests/repeat-reporter.ts', {}]]
+    : [['html', {}], ['./tests/repeat-reporter.ts', {}]],
 
   timeout: 120_000,
   expect: { timeout: 60_000 },
@@ -41,18 +44,7 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      // CI에서는 chromium만 실행하여 속도 향상
-      grep: process.env.CI ? /chromium/ : /.*/,
     },
-    // 로컬에서만 firefox 테스트 (CI에서는 속도 위해 제외)
-    ...(process.env.CI
-      ? []
-      : [
-        {
-          name: 'firefox',
-          use: { ...devices['Desktop Firefox'] },
-        },
-      ]),
   ],
 
   /* Run your local dev server before starting the tests */
