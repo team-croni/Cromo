@@ -37,8 +37,8 @@ export function validateCreateMemoInput(data: any) {
 export function validateBatchOperationInput(data: any) {
   const { ids, action } = data;
 
-  if (!ids || !Array.isArray(ids) || ids.length === 0 || ids.length > 100) {
-    throw new Error('IDs must be an array with 1-100 items');
+  if (!ids || !Array.isArray(ids) || ids.length === 0 || ids.length > 5000) {
+    throw new Error('IDs must be an array with 1-5000 items');
   }
 
   for (const id of ids) {
