@@ -205,8 +205,8 @@ export default function SettingsPage() {
 
   return (
     <MainLayout>
-      <div className="flex-1 flex flex-col h-full pt-4 bg-background overflow-y-scroll scrollbar-normal">
-        <div className="flex-1 max-w-2xl mx-auto w-full p-6 space-y-8 pb-20">
+      <div className="flex-1 flex flex-col h-full pt-0 md:pt-4 bg-background overflow-y-scroll scrollbar-normal">
+        <div className="flex-1 max-w-4xl w-full mx-auto py-6 px-4 md:px-8 lg:px-8 space-y-8 pb-20">
           {/* User Info Section */}
           <section className="space-y-4 opacity-0 slide-up" style={{ animationDelay: "0ms", animationFillMode: 'forwards' }}>
             <h2 className="text-sm font-medium text-muted-foreground">내 계정</h2>
