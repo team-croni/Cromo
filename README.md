@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./public/images/logo-full.png" width="380px" />
 
-[버그 제보](https://github.com/team-croni/crogger/issues) · [기능 요청](https://github.com/team-croni/crogger/issues)
+[버그 제보](https://cromo.site/contact) · [기능 요청](https://github.com/team-croni/cromo/issues)
 
 **"AI와 함께하는 스마트한 메모 관리"**
 
