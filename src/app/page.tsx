@@ -5,10 +5,11 @@ import { PricingSection } from "@/components/landing/pricing-section";
 import { BetaTestSection } from "@/components/landing/beta-test-section";
 import { Footer } from "@/components/landing/footer";
 import { FaqSection } from "@components/landing/faq-section";
+import "@styles/landing.css";
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://cromo.site";
-  
+
   const jsonLd = [
     {
       "@context": "https://schema.org",

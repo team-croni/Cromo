@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "@styles/landing.css";
 import 'ldrs/react/Ring.css'
 import { ThemeProvider } from "@components/providers/theme-provider";
 import AuthProvider from "@components/providers/auth-provider";

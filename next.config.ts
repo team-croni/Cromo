@@ -3,6 +3,8 @@ const withPWA = require("next-pwa");
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  // JavaScript minification은 프로덕션 빌드에서 기본적으로 활성화됨
+  // SWC를 사용한 minification이 기본값
   images: {
     remotePatterns: [
       {
@@ -35,7 +37,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg')
     );
