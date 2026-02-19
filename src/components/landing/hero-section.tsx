@@ -88,12 +88,13 @@ export function HeroSection() {
 
             {/* Placeholder Content Area */}
             <div className="relative aspect-1600/968 bg-[#0c0c0e] w-full flex items-center justify-center overflow-hidden group">
-              <Image 
-                src="/images/hero-screenshot1.png" 
-                alt="Cromo 메모 대시보드 미리보기" 
+              <Image
+                src="/images/hero-screenshot1.png"
+                alt="Cromo 메모 대시보드 미리보기"
                 width={1600}
                 height={968}
-                className="object-cover pointer-events-none select-none" 
+                priority
+                className="object-cover pointer-events-none select-none"
               />
             </div>
           </div>

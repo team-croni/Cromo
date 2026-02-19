@@ -1,4 +1,5 @@
 import { DEFAULT_AVATAR_GRADIENT } from "@constants/avatar-gradients";
+import Image from "next/image";
 
 interface UserAvatarProps {
   userId?: string;
@@ -32,11 +33,12 @@ export function UserAvatar({
   // 사용자 이미지가 있고 명시적으로 image 타입을 설정한 경우 이미지로 표시
   if (userImage && finalAvatarType === "image") {
     return (
-      <div className={`${sizeClasses[size]} rounded-full overflow-hidden ${showBorder ? 'border-2 border-background' : ''}`}>
-        <img
+      <div className={`${sizeClasses[size]} rounded-full overflow-hidden relative ${showBorder ? 'border-2 border-background' : ''}`}>
+        <Image
           src={userImage}
           alt={userName || "User"}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
       </div>
     );
