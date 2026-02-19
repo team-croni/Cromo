@@ -66,14 +66,16 @@ export function EditorPreview() {
 장소 : 대회의실 A`}
               </code>
             </pre>
-            <li className="flex items-center">
-              <input type="radio" className="w-5 h-5 mr-2 border" disabled />
-              <span>회의 자료 준비</span>
-            </li>
-            <li className="flex items-center">
-              <input type="radio" className="w-5 h-5 mr-2 border" checked={checked} disabled />
-              <span className={`${checked ? 'line-through opacity-70' : ''}`}>참석자 일정 조율 완료</span>
-            </li>
+            <ul className="space-y-4 p-0" aria-hidden="true">
+              <li className="flex items-center">
+                <input type="radio" className="w-5 h-5 mr-2 border" disabled />
+                <span>회의 자료 준비</span>
+              </li>
+              <li className="flex items-center">
+                <input type="radio" className="w-5 h-5 mr-2 border" checked={checked} disabled />
+                <span className={`${checked ? 'line-through opacity-70' : ''}`}>참석자 일정 조율 완료</span>
+              </li>
+            </ul>
             <hr />
             <h2>사업부별 성과 보고</h2>
             <h3 className="mb-2">영업팀</h3>
