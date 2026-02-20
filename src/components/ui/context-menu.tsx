@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 export interface ContextMenuOption {
@@ -23,10 +23,39 @@ interface ContextMenuProps {
 export function ContextMenu({ isOpen, x, y, options, onClose, dataTestid }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState({ x, y });
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useLayoutEffect(() => {
+    if (isOpen && menuRef.current) {
+      const menu = menuRef.current;
+      const menuWidth = menu.offsetWidth;
+      const menuHeight = menu.offsetHeight;
+      const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
+      const PADDING = 8;
+
+      let adjustedX = x;
+      if (x + menuWidth > windowWidth - PADDING) {
+        adjustedX = windowWidth - menuWidth - PADDING;
+      }
+      if (adjustedX < PADDING) {
+        adjustedX = PADDING;
+      }
+
+      let adjustedY = y;
+      if (y + menuHeight > windowHeight - PADDING) {
+        adjustedY = windowHeight - menuHeight - PADDING;
+      }
+      if (adjustedY < PADDING) {
+        adjustedY = PADDING;
+      }
+      
+      setPosition({ x: adjustedX, y: adjustedY });
+    }
+  }, [isOpen, x, y]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,8 +87,8 @@ export function ContextMenu({ isOpen, x, y, options, onClose, dataTestid }: Cont
         ref={menuRef}
         className={`fixed z-100 min-w-45 bg-background text-foreground rounded-2xl shadow-xl/20 border px-2 py-2.5 space-y-1 transition-transform ${isOpen ? '' : 'opacity-0 pointer-events-none translate-y-2.5'}`}
         style={{
-          left: `${x}px`,
-          top: `${y}px`,
+          left: `${position.x}px`,
+          top: `${position.y}px`,
         }}
       >
         {options.map((option, index) => {
