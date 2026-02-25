@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import { Ring } from 'ldrs/react';
 import { useMemos } from '@hooks/useMemos';
 import { useMemoBrowserStore } from '@store/memoBrowserStore';
-import { CircleCheckBig, CircleX, Plus } from 'lucide-react';
+import { CircleCheckBig, CircleX, Plus, RotateCcw } from 'lucide-react';
 import { ContextMenu, ContextMenuOption } from '@components/ui/context-menu';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { VirtualListItem } from '@utils/virtualListUtils';
@@ -187,14 +187,15 @@ export function MemoListContainer({
   if (error) {
     return (
       <div className="p-3.5 h-full flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-2">Error: {error}</p>
+        <div className="text-center px-4">
+          <p className="mb-4 text-destructive text-sm">데이터를 불러오는 중에 오류가 발생했습니다.<br />잠시 후 다시 시도해주세요.</p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex items-center px-4 py-2 mx-auto border border-input-border rounded-full text-sm hover:bg-foreground/3 hover:border-foreground/30 text-muted-foreground hover:text-foreground"
             >
-              Retry
+              <RotateCcw className="w-4 h-4 mr-2" strokeWidth={1.5} />
+              재시도
             </button>
           )}
         </div>

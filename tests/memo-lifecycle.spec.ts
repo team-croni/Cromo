@@ -80,7 +80,7 @@ test.describe('Memo Lifecycle E2E', () => {
         const errorText = await errorElement.textContent().catch(() => '');
         log(`휴지통 로드 중 에러 감지: ${errorText}`);
         // 재시도 버튼이 있으면 클릭
-        const retryButton = page.locator('button:has-text("Retry")');
+        const retryButton = page.locator('button:has-text("재시도")');
         if (await retryButton.isVisible().catch(() => false)) {
           log('재시도 버튼 클릭...');
           await retryButton.click();
