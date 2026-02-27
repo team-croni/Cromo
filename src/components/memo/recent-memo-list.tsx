@@ -10,7 +10,7 @@ import { RecentlyUpdatedItem } from '@/components/memo/recently-updated-item';
 import { flattenCategorizedMemos, flattenMemos } from '@/utils/virtualListUtils';
 
 export function RecentMemoList() {
-  const { recentMemosLoading, memos, archivedMemos } = useMemos();
+  const { recentMemosLoading, error, memos, archivedMemos, refreshMemos } = useMemos();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const folderId = searchParams.get('folderId');
@@ -38,9 +38,9 @@ export function RecentMemoList() {
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 카테고리별로 분류 (정렬 옵션에 따라 결정)
-  const categorizedMemos = useMemo(() => 
+  const categorizedMemos = useMemo(() =>
     shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, filterOptions.showLiveShareTop, filterOptions.groupBy) : null
-  , [shouldCategorize, filteredMemos, filterOptions]);
+    , [shouldCategorize, filteredMemos, filterOptions]);
 
   // 가상 리스트를 위한 아이템 평탄화
   const virtualItems = useMemo(() => {
@@ -48,7 +48,7 @@ export function RecentMemoList() {
       const categoryOrder = filterOptions.groupBy === 'monthly'
         ? Object.keys(categorizedMemos)
         : getCategoryOrder(filterOptions.sortDirection, filterOptions.showLiveShareTop);
-      
+
       return flattenCategorizedMemos(categorizedMemos, categoryOrder, filterOptions.groupBy);
     }
     return flattenMemos(filteredMemos);
@@ -59,8 +59,10 @@ export function RecentMemoList() {
   return (
     <MemoListContainer
       isLoading={recentMemosLoading}
+      error={error}
       isEmpty={allMemos.length === 0}
       emptyMessage="최근 메모가 없습니다."
+      onRetry={refreshMemos}
       memos={filteredMemos}
       virtualItems={virtualItems}
     >

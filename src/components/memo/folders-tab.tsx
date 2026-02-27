@@ -1,4 +1,3 @@
-import { useTabStore } from '@store/tabStore';
 import { useFolderHandlers } from '@hooks/useFolderHandlers';
 import { useMemos } from '@hooks/useMemos';
 
@@ -14,8 +13,7 @@ import { RecentlyUpdatedItem } from '@components/memo/recently-updated-item';
 import { flattenCategorizedMemos, flattenMemos } from '@/utils/virtualListUtils';
 
 export function FoldersTab() {
-  const { activeTab } = useTabStore();
-  const { folderMemos, folderMemosLoading } = useMemos();
+  const { folderMemos, folderMemosLoading, error, refreshFolderMemos } = useMemos();
   const { folders } = useFolderHandlers();
   const { filterOptions, shouldCategorizeMemos } = useMemoBrowserStore();
   const searchParams = useSearchParams();
@@ -68,9 +66,9 @@ export function FoldersTab() {
   const shouldCategorize = shouldCategorizeMemos();
 
   // 메모들을 카테고리별로 분류
-  const categorizedMemos = useReactMemo(() => 
+  const categorizedMemos = useReactMemo(() =>
     shouldCategorize ? categorizeMemos([...filteredMemos], filterOptions.sortBy, filterOptions.sortDirection, filterOptions.showLiveShareTop, filterOptions.groupBy) : null
-  , [shouldCategorize, filteredMemos, filterOptions]);
+    , [shouldCategorize, filteredMemos, filterOptions]);
 
   // 가상 리스트를 위한 아이템 평탄화
   const virtualItems = useReactMemo(() => {
@@ -78,7 +76,7 @@ export function FoldersTab() {
       const categoryOrder = filterOptions.groupBy === 'monthly'
         ? Object.keys(categorizedMemos)
         : getCategoryOrder(filterOptions.sortDirection, filterOptions.showLiveShareTop);
-      
+
       return flattenCategorizedMemos(categorizedMemos, categoryOrder, filterOptions.groupBy);
     }
     return flattenMemos(filteredMemos);
@@ -89,8 +87,10 @@ export function FoldersTab() {
   return (
     <MemoListContainer
       isLoading={folderMemosLoading}
+      error={error}
       isEmpty={folderMemos.length === 0}
       emptyMessage={emptyMessage}
+      onRetry={refreshFolderMemos}
       memos={filteredMemos}
       virtualItems={virtualItems}
     >
