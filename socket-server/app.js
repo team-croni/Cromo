@@ -11,7 +11,7 @@ import {
 import { roomData } from "./store/index.js";
 import registerHandlers from "./handlers/index.js";
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4001;
 const logger = { info, warn, error, success };
 
 // 서버 시작 정보

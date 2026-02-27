@@ -1,0 +1,32 @@
+# 1. Base Image
+# 가볍고 안정적인 Node.js 20 Alpine 버전을 기반 이미지로 사용합니다.
+FROM node:20-alpine AS base
+
+# 2. Set Working Directory
+WORKDIR /app
+
+# 3. Install Dependencies
+RUN npm install -g pnpm
+# PostgreSQL 클라이언트 설치 (psql 명령 사용을 위해)
+RUN apk add --no-cache postgresql-client
+COPY package.json pnpm-lock.yaml* ./
+COPY prisma ./prisma/
+# 빌드 시 DATABASE_URL 설정 (Prisma generate에만 사용)
+# docker build --build-arg DATABASE_URL=... 로 전달 필요
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+RUN pnpm install --frozen-lockfile --ignore-scripts
+RUN pnpm prisma generate
+
+# 4. Copy Application Code
+COPY . .
+
+# 5. Development Mode - No Build Step
+# 개발 모드에서는 빌드하지 않고 소스 코드를 그대로 사용합니다.
+
+# 6. Expose Port
+EXPOSE 3000
+
+# 7. Start Command - Development Mode with Hot Reload
+# pnpm dev를 사용하여 개발 모드로 실행 (코드 변경 시 자동 재시작)
+CMD ["pnpm", "dev"]

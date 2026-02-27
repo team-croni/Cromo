@@ -18,7 +18,7 @@
     "test": "npm run test:e2e && npm run test:unit",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
+    "db:migrate": "prisma migrate dev --name init",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force",
     "db:apply-indexes": "tsx scripts/apply-indexes.ts",

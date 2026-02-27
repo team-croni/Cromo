@@ -1,0 +1,55 @@
+services:
+  # PostgreSQL 데이터베이스 서비스 정의
+  postgres:
+    image: pgvector/pgvector:0.8.2-pg18-trixie # pgvector 확장이 포함된 PostgreSQL 이미지 사용
+    restart: always # 컨테이너 종료 시 항상 재시작
+    env_file:
+      - .env
+    ports:
+      - "5432:5432" # 로컬 5432 포트와 컨테이너 5432 포트 연결
+    volumes:
+      - db-data:/var/lib/postgresql # 데이터 지속성을 위한 볼륨 마운트
+
+  # Next.js 애플리케이션 서비스 정의
+  nextjs-app:
+    build:
+      context: . # 현재 디렉토리에서 Dockerfile을 찾아 빌드
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL
+    restart: always
+    ports:
+      - "3000:3000" # 로컬 3000 포트와 컨테이너 3000 포트 연결
+    env_file:
+      - .env
+    environment: # 환경 변수 설정
+      # DATABASE_URL은 .env 파일에서 가져옴
+      # Docker Compose 네트워크 내에서 Socket.IO 서버에 접근
+      SOCKET_SERVER_URL: http://socket-server:4000
+      # 개발 환경에서 Inngest가 호스트 머신에서 실행되는 Inngest dev 서버에 연결
+      # 별도 터미널에서 'npx inngest dev --port 8288' 실행 필요
+      INNGEST_BASE_URL: http://host.docker.internal:8288
+    depends_on: # postgres와 socket-server가 먼저 시작되도록 의존성 설정
+      - postgres
+      - socket-server
+
+  # Socket.IO 서버 서비스 정의
+  socket-server:
+    build:
+      context: . # 루트 디렉토리에서 빌드
+      dockerfile: socket-server/Dockerfile
+    restart: always
+    ports:
+      - "4001:4000" # 로컬 4001 포트와 컨테이너 4000 포트 연결 (충돌 방지를 위해 호스트 포트를 다르게 설정)
+    env_file:
+      - .env
+    environment: # 환경 변수 설정
+      # DATABASE_URL은 .env 파일에서 가져옴
+      # Socket.IO 서버가 사용할 내부 포트
+      PORT: 4000
+    depends_on:
+      - postgres # postgres가 먼저 시작되도록 의존성 설정
+
+# 데이터 지속성을 위한 볼륨 정의
+volumes:
+  db-data:
