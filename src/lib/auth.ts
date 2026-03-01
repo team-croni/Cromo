@@ -204,6 +204,7 @@ export const authOptions = {
     },
   },
   pages: {
+    signIn: '/login',
     error: '/login', // 인증 에러 발생 시 로그인 페이지로 리다이렉트
   },
 }

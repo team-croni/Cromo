@@ -19,6 +19,24 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [lastLoginMethod, setLastLoginMethod] = useState<string | null>(null);
 
+  // 에러 쿼리 파라미터 처리
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      // 다양한 에러类型에 대한 사용자 친화적 메시지
+      const errorMessages: Record<string, string> = {
+        "Callback": "로그인 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        "OAuthSignin": "로그인 중 오류가 발생했습니다.",
+        "OAuthCallback": "로그인 중 오류가 발생했습니다.",
+        "Default": "로그인 중 오류가 발생했습니다.",
+        "AccountNotLinked": "이 이메일로 이미 다른 계정이 연결되어 있습니다.",
+        "InvalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다.",
+        "SessionRequired": "로그인이 필요합니다.",
+      };
+      setError(errorMessages[errorParam] || errorMessages["Default"]);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     if (status === "authenticated") {
       const callbackUrl = searchParams.get("callbackUrl") || "/memo";
