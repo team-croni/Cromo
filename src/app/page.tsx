@@ -15,7 +15,7 @@ export default function Home() {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Cromo",
-      "description": "AI와 함께하는 스마트한 메모 관리 플랫폼. 실시간 공유와 지능형 검색을 통해 아이디어를 가치 있게 만드세요.",
+      "description": "AI와 함께하는 스마트한 메모 관리 플랫폼. 실시간 공유와 지능형 검색을 통해 아이디어를 가치 있게 만드세요. - Cromo(크로모)",
       "url": baseUrl,
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Web",

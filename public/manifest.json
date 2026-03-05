@@ -1,7 +1,7 @@
 {
   "name": "Cromo",
   "short_name": "Cromo",
-  "description": "AI와 함께하는 스마트한 메모 관리",
+  "description": "AI와 함께하는 스마트한 메모 관리 - Cromo(크로모)",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
