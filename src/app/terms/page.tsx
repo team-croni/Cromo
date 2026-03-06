@@ -15,7 +15,7 @@ export default function TermsPage() {
 
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">제2조 (서비스의 내용 및 AI 기능)</h2>
-        <p>회사는 회원에게 메모 작성, 실시간 협업, AI 기반 콘텐츠 분석 서비스를 제공합니다.</p>
+        <p>회사는 회원에게 메모 작성, 실시간 공유, AI 기반 콘텐츠 분석 서비스를 제공합니다.</p>
         <ul className="list-disc pl-5 space-y-2 mt-2">
           <li>회원은 AI 기능을 통해 생성된 결과물을 자유롭게 이용할 수 있습니다.</li>
           <li>단, AI가 생성한 결과물은 기술적 한계로 인해 부정확하거나 편향된 정보를 포함할 수 있으며, 회사는 결과물의 완전성이나 정확성을 보증하지 않습니다.</li>
