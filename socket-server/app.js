@@ -20,22 +20,12 @@ logger.info(`시작: PORT=${PORT}, ENV=${process.env.NODE_ENV || "dev"}`);
 const app = express();
 
 // 헬스 체크
-app.get(["/", "/health"], async (req, res) => {
-  try {
-    const client = getPrismaClient();
-    await client.$queryRaw`SELECT 1`;
-    res.json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      database: "connected",
-      memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-    });
-  } catch (error) {
-    // 에러 로깅
-    logger.error("헬스 체크 실패", req);
-
-    res.status(503).json({ status: "error", database: "disconnected" });
-  }
+app.get(["/", "/health"], (req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+  });
 });
 
 const server = createServer(app);

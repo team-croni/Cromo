@@ -44,16 +44,15 @@ export const processEmbeddings = inngest.createFunction(
   }
 );
 
-// Process embeddings function - scheduled
+// Process embeddings function - scheduled (매일 새벽 4시 1회 실행)
 export const processEmbeddingsScheduled = inngest.createFunction(
   {
     id: "process-embedding-updates-scheduled",
     name: "Process Embedding Updates Scheduled",
   },
-  { cron: "0/4 * * * *" },
+  { cron: "0 4 * * *" }, // Daily at 4:00 AM
   async ({ step }) => {
-    const result = await processPendingEmbeddingUpdates(2); // 최대 2개씩 처리
-    // ogger.scheduler(`Scheduled process embedding updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    const result = await processPendingEmbeddingUpdates(2);
     return result;
   }
 );
@@ -66,22 +65,20 @@ export const processTags = inngest.createFunction(
   },
   { event: "app/process.tag-updates" }, // Trigger event for tag updates
   async ({ step }) => {
-    const result = await processPendingTagUpdates(5); // 배치 크기를 줄여 서버 부하 감소
-    // logger.scheduler(`Process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    const result = await processPendingTagUpdates(5);
     return result;
   }
 );
 
-// Process tags function - scheduled
+// Process tags function - scheduled (매일 새벽 4시 30분 1회 실행)
 export const processTagsScheduled = inngest.createFunction(
   {
     id: "process-tag-updates-scheduled",
     name: "Process Tag Updates Scheduled",
   },
-  { cron: "2/4 * * * *" },
+  { cron: "30 4 * * *" }, // Daily at 4:30 AM
   async ({ step }) => {
-    const result = await processPendingTagUpdates(5); // 최대 5개씩 처리
-    // logger.scheduler(`Scheduled process tag updates job completed. Processed: ${result.processed}, Success: ${result.success}`);
+    const result = await processPendingTagUpdates(5);
     return result;
   }
 );
