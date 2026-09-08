@@ -7,7 +7,7 @@
     "dev": "next dev",
     "dev:socket": "node socket-server/app.js",
     "postinstall": "prisma generate",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "start:socket": "NODE_ENV=production node socket-server/app.js",
     "lint": "eslint",

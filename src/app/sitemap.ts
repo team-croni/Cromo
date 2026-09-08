@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/db/prisma'
 
+// 빌드 시점 DB 연결 시도를 방지하고 요청 시점에 동적으로 사이트맵을 생성
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://cromo.site'
 

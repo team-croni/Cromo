@@ -25,7 +25,8 @@ RUN pnpm prisma generate
 COPY . .
 
 # 5. Build Application
-# Next.js 애플리케이션을 프로덕션 모드로 빌드합니다.
+# Next.js 애플리케이션을 프로덕션 모드로 빌드합니다. (OOM 방지를 위한 메모리 제한 설정)
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN pnpm build
 
 # 7. Expose Port
